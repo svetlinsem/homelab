@@ -1,4 +1,4 @@
 .DS_Store
 .vscode/settings.json
 Ansible-mac-test/.vscode/settings.json
-inventory
+Ansible-mac-test/ansible apt_update/inventory
