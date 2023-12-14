@@ -1,0 +1,9 @@
+---
+  - name: Apt-update
+    hosts: all
+
+    tasks:
+      - name:
+        ansible.builtin.apt: 
+        
+
