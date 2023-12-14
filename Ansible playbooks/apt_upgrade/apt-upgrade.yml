@@ -1,0 +1,17 @@
+---
+  - name: Apt-upgrade
+    hosts: all
+
+    tasks:
+      - name: Update all packages to their latest version
+        apt:
+          name: "*"
+          state: latest
+
+      - name: Remove dependencies that are no longer required and purge their configuration files
+        apt:
+          autoremove: yes
+
+      - name:
+        apt:
+          clean: yes
