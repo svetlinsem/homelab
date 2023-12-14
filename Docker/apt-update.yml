@@ -1,0 +1,10 @@
+---
+  - name: Apt-update
+    hosts: all
+
+    tasks:
+      - name:
+        apt:
+          update_cache: yes
+        
+
