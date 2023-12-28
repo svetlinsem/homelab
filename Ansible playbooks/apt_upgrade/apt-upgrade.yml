@@ -5,9 +5,11 @@
     tasks:
       - name: Update all packages to their latest version
         apt:
+          update_cache: true
+          cache_valid_time: 3600
           name: "*"
           state: latest
-
+          
       - name: Remove dependencies that are no longer required and purge their configuration files
         apt:
           autoremove: yes
