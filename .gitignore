@@ -8,3 +8,4 @@ Ansible playbooks/apt_update/inventory
 Ansible playbooks/apt_update/ansible.cfg
 Ansible playbooks/apt_upgrade/inventory
 Ansible playbooks/apt_upgrade/ansible.cfg
+ansible/apt_upgrade/inventory
