@@ -1,6 +1,7 @@
 192.168.1.5 ansible_user=root
 192.168.1.6 ansible_user=root
 192.168.1.9 ansible_user=root
+192.168.1.10 ansible_user=root
 192.168.1.11 ansible_user=root
 192.168.1.13 ansible_user=root
 192.168.1.14 ansible_user=root
@@ -10,6 +11,6 @@
 192.168.1.18 ansible_user=root
 192.168.1.19 ansible_user=root
 192.168.1.21 ansible_user=root
-192.168.1.22 ansible_user=root
+
 
 
