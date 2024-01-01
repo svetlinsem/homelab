@@ -1,11 +1,1 @@
-.DS_Store
-.vscode/settings.json
-Ansible-mac-test/.vscode/settings.json
-Ansible-mac-test/apt_update/inventory
-Ansible playbooks/ansible.cfg
-Ansible playbooks/inventory
-Ansible playbooks/apt_update/inventory
-Ansible playbooks/apt_update/ansible.cfg
-Ansible playbooks/apt_upgrade/inventory
-Ansible playbooks/apt_upgrade/ansible.cfg
-ansible/apt_upgrade/inventory
+
