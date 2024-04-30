@@ -25,8 +25,8 @@ read -p "Do you want to add a guest agent? (y/n): " add_guest_agent
 if [[ "$add_guest_agent" == "y" ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
-    sudo apt-get install -y libguestfs-tools
-    sudo virt-customize -a $selected_os --install qemu-guest-agent
+    apt-get install -y libguestfs-tools
+    virt-customize -a $selected_os --install qemu-guest-agent
 fi
 
 # Prompt user for VM configuration
