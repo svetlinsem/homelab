@@ -1,0 +1,4 @@
+[lxc:vars]
+ansible_user=root
+
+[lxc]

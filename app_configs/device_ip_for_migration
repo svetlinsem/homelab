@@ -1,0 +1,33 @@
+192.168.1.1 gateway
+192.168.1.2 idrac
+192.168.1.3 Synology
+
+192.168.1.4 Proxmox
+192.168.1.6 Omada
+192.168.1.7 Truenas
+192.168.1.8 Nextcloud
+
+192.168.1.5 Cloudflaer
+192.168.1.11 Kemp
+
+192.168.1.20 Portainer
+192.168.1.21 Semaphore
+
+192.168.1.30 Qbitorrent
+192.168.1.31 Sonarr
+192.168.1.32 Radarr
+192.168.1.33 Bazarr
+192.168.1.34 Provlarr
+192.168.1.35 Jelyserr
+192.168.1.36 Plex
+
+192.168.1.40 Grafana
+192.168.1.41 Loki
+192.168.1.42 Influxdb1
+192.168.1.43 influxdb2
+
+192.168.1.50 Tailscale
+192.168.1.150 Wireguard
+
+
+
