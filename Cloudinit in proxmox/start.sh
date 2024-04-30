@@ -6,19 +6,12 @@ read -p "Choose OS (debian/ubuntu): " os_choice
 # Set a variable to track the selected OS
 selected_os=""
 
-# Check if the OS image is downloaded
-if [[ -f "$selected_os-cloud-image.qcow2" ]]; then
-    echo "$selected_os image downloaded successfully."
-else
-    echo "Error: $selected_os image not found. Exiting."
-    exit 1
-fi
 
 Download the selected OS image
-if [[ "$os_choice" == "debian" ]]; then
+if [[ "$os_choice" == "debian" && ! -f "debian-cloud-image.qcow2" ]]; then
     wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2
     selected_os="Debian"
-elif [[ "$os_choice" == "ubuntu" ]]; then
+elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-cloud-image.qcow2" ]]; then
     wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="Ubuntu"
 else
