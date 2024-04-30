@@ -32,13 +32,12 @@ fi
 
 # Prompt user for VM configuration
 read -p "Enter VM number: " vm_number
-read -p "Enter VM Name" name
+read -p "Enter VM Name: " name
 read -p "Enter memory (MB): " memory
 read -p "Enter network bridge (vmbr0): " network_bridge
 read -p "Enter disk size (GB): " disk_size
 read -p "Enter storage pool (local-lvm): " storage_pool
-read -p "Enter ip or leave dhcp" ip
-read -p "Enter disk space -example 15G" G
+
 
 
 
@@ -48,8 +47,8 @@ qm importdisk $vm_number debian-cloud-image.qcow2 $storage_pool
 qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-disk-0
 qm set $vm_number --ide2 $storage_pool:cloudinit
 qm set $vm_number --boot c --bootdisk scsi0
-qm set $vm_number --ipconfig0 $ip=dhcp
-qm resize $vm_number scsi0 $G
+qm set $vm_number --ipconfig0 ip=dhcp
+qm resize $vm_number scsi0 $disk_size
 qm template $vm_number
 
 rm -f debian-12-generic-amd64.qcow2 ubuntu-22.04-server-cloudimg-amd64.img
