@@ -9,10 +9,10 @@ selected_os=""
 
 Download the selected OS image
 if [[ "$os_choice" == "debian" && ! -f "debian-cloud-image.qcow2" ]]; then
-    wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2
+    wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O /var/lib/vz/template/iso/debian-12-generic-amd64.qcow2
     selected_os="debian-12-generic-amd64.qcow2"
 elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-cloud-image.qcow2" ]]; then
-    wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img
+    wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O /var/lib/vz/template/iso/ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="ubuntu-22.04-server-cloudimg-amd64.img"
 else
     echo "Invalid choice. Exiting."
