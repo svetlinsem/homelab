@@ -29,3 +29,4 @@ terraform/workshop/zabbix-tfconfig/vars.tf
 terraform/workshop/zabbix-tfconfig/mirror/registry.opentofu.org/claranet/zabbix/.terraform-provider-zabbix_0.4.0_linux_amd64.zip
 k8s_deploy/k8s_install/k8s_install_terraform/providers.tf
 k8s_deploy/k8s_new_node/k8s_new_node_terraform/providers.tf
+terraform/workshop/initlab-proxmox
