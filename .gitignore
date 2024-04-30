@@ -1,0 +1,5 @@
+/.vscode
+/ansible
+/app_configs
+/k8s_deploy
+/terraform
