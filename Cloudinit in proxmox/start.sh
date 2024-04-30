@@ -31,7 +31,7 @@ if [[ "$add_guest_agent" == "y" ]]; then
 fi
 
 # Prompt user for VM configuration
-read -p "Enter VM number: " vm_number
+read -p  vm_number = "Enter VM number: " 
 read -p "Enter VM Name: " name
 read -p "Enter memory (MB): " memory
 read -p "Enter network bridge (vmbr0): " network_bridge
