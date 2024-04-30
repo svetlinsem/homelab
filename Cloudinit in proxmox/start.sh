@@ -8,10 +8,10 @@ selected_os=""
 
 
 Download the selected OS image
-if [[ "$os_choice" == "debian" && ! -f "debian-cloud-image.qcow2" ]]; then
+if [[ "$os_choice" == "debian" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
     wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2
     selected_os="debian-12-generic-amd64.qcow2"
-elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-cloud-image.qcow2" ]]; then
+elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img" ]]; then
     wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="ubuntu-22.04-server-cloudimg-amd64.img"
 else
@@ -42,7 +42,7 @@ read -p "Enter storage pool (local-lvm): " storage_pool
 
 
 # Create cloud-init template
-qm create $vm_number --name my-vm --memory $memory --net0 virtio,bridge=$network_bridge
+qm create $vm_number --name $name --memory $memory --net0 virtio,bridge=$network_bridge
 qm importdisk $vm_number debian-cloud-image.qcow2 $storage_pool
 qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-disk-0
 qm set $vm_number --ide2 $storage_pool:cloudinit
