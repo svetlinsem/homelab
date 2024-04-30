@@ -30,3 +30,4 @@ terraform/workshop/zabbix-tfconfig/mirror/registry.opentofu.org/claranet/zabbix/
 k8s_deploy/k8s_install/k8s_install_terraform/providers.tf
 k8s_deploy/k8s_new_node/k8s_new_node_terraform/providers.tf
 terraform/workshop/initlab-proxmox
+terraform/workshop/initlab-proxmox
