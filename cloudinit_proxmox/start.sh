@@ -20,7 +20,7 @@ else
         wget "$custom_iso_url" -O custom.iso
         selected_os="custom.iso"
     else
-        echo "Invalid choice or ISO already exists. Proceeding."
+        echo "ISO already exists. Proceeding."
     fi
 fi
 
@@ -53,7 +53,7 @@ qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-d
 qm set $vm_number --ide2 $storage_pool:cloudinit
 qm set $vm_number --boot c --bootdisk scsi0
 qm set $vm_number --ipconfig0 ip=dhcp
-qm resize $vm_number scsi0 $disk_size G
+qm resize $vm_number scsi0 $disk_size 
 
 
 # Prompt user if they want to create a template
