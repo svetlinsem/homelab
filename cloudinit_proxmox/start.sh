@@ -7,7 +7,7 @@ read -p "Choose OS (debian/ubuntu): " os_choice
 selected_os=""
 
 
-Download the selected OS image
+# Check if the ISO file exists or allow custom ISO
 if [[ "$os_choice" == "debian" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
     wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2
     selected_os="debian-12-generic-amd64.qcow2"
@@ -15,8 +15,13 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
     wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="ubuntu-22.04-server-cloudimg-amd64.img"
 else
-    echo "Invalid choice. Exiting."
-    exit 1
+    read -p "Enter custom ISO URL (leave empty to proceed without custom ISO): " custom_iso_url
+    if [[ -n "$custom_iso_url" ]]; then
+        wget "$custom_iso_url" -O custom.iso
+        selected_os="custom.iso"
+    else
+        echo "Invalid choice or ISO already exists. Proceeding."
+    fi
 fi
 
 # Prompt user if they want to add a guest agent
@@ -48,7 +53,18 @@ qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-d
 qm set $vm_number --ide2 $storage_pool:cloudinit
 qm set $vm_number --boot c --bootdisk scsi0
 qm set $vm_number --ipconfig0 ip=dhcp
-qm resize $vm_number scsi0 $disk_size
+qm resize $vm_number scsi0 $disk_size G
+
+
+# Prompt user if they want to create a template
+read -p "Do you want to create a template? (y/n): " create_template
+
+# If user wants to create a template, modify the script accordingly
+if [[ "$create_template" == "y" ]]; then
+    # Add template creation logic here
+    echo "Creating template..."
+    # Modify the script as needed
+fi
 qm template $vm_number
 
-rm -f debian-12-generic-amd64.qcow2 ubuntu-22.04-server-cloudimg-amd64.img
+rm -f debian-12-generic-amd64.qcow2 ubuntu-22.04-server-cloudimg-amd64.img custom_iso
