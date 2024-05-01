@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Prompt user to choose OS
-read -p "Choose OS (debian/ubuntu): " os_choice
+read -p "Choose OS (debian/ubuntu/custom OS): " os_choice
 
 # Set a variable to track the selected OS
 selected_os=""
