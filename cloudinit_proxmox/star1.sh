@@ -1,1 +1,1 @@
-whiptail --title "Welcome Message" --msgbox "Howdy, Welcome to OSTechnix.." 8 78s
+whiptail --title "Welcome Message" --msgbox "Howdy, Welcome to OSTechnix.." 8 45
