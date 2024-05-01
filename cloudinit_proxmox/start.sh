@@ -1,10 +1,35 @@
 #!/bin/bash
 
+# Set dialog menu title
+TITLE="Select OS"
+
 # Prompt user to choose OS
-read -p "Choose OS (Debian 12/ Ubuntu 22.04/ Custom OS):" os_choice
+items=(1 "Debian 12"
+       2 "Ubuntu 22.04"
+       3 "Custom OS")
+
+while choice=$(dialog --title "$TITLE" \
+                 --menu "Please select" 10 40 3 "${items[@]}" \
+                 2>&1 >/dev/tty)
+do
+    case $choice in
+        1) os_choice="Debian 12";;
+        2) os_choice="Ubuntu 22.04";;
+        3) read -p "Enter custom ISO URL (leave empty to proceed without custom ISO): " custom_iso_url
+           if [[ -n "$custom_iso_url" ]]; then
+               wget "$custom_iso_url" -O custom.iso
+               selected_os="custom.iso"
+           else
+               echo "ISO already exists. Proceeding."
+           fi
+           ;;
+    esac
+done
+clear # Clear after user pressed Cancel
 
 # Set a variable to track the selected OS
 selected_os=""
+
 
 
 # Check if the ISO file exists or allow custom ISO
