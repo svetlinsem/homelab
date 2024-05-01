@@ -48,7 +48,7 @@ read -p "Enter storage pool (local-lvm):" storage_pool
 
 # Create cloud-init template
 qm create $vm_number --name $name --memory $memory --net0 virtio,bridge=$network_bridge
-qm importdisk $vm_number debian-cloud-image.qcow2 $storage_pool
+qm importdisk $vm_number $selected_os $storage_pool
 qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-disk-0
 qm set $vm_number --ide2 $storage_pool:cloudinit
 qm set $vm_number --boot c --bootdisk scsi0
@@ -67,4 +67,4 @@ if [[ "$create_template" == "y" ]]; then
 fi
 qm template $vm_number
 
-rm -f debian-12-generic-amd64.qcow2 ubuntu-22.04-server-cloudimg-amd64.img custom_iso
+rm -f $selected_os
