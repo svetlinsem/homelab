@@ -3,10 +3,14 @@
 # Set dialog menu title
 TITLE="Select OS"
 
+# Initialize variables
+os_choice=""
+selected_os=""
+
 # Prompt user to choose OS
 items=(1 "Debian 12"
        2 "Ubuntu 22.04"
-       3 "Custom ISO")
+       3 "Custom OS")
 
 while choice=$(dialog --title "$TITLE" \
                  --menu "Please select" 10 40 3 "${items[@]}" \
@@ -25,6 +29,7 @@ do
            ;;
     esac
 done
+clear # Clear after user pressed Cancel
 
 # Check if the ISO file exists or allow custom ISO
 if [[ "$os_choice" == "Debian 12" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
@@ -42,9 +47,6 @@ else
         echo "ISO already exists. Proceeding."
     fi
 fi
-
-# Set a variable to track the selected OS
-selected_os=""
 
 # Prompt user if they want to add a guest agent
 echo "Do you want to add a guest agent? (y/n): " add_guest_agent
