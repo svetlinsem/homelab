@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Prompt user to choose SSH or local execution
+read -p "Do you want to use SSH to connect to a remote host? (y/n): " use_ssh
+
+# SSH in Proxmox
+if [[ "$use_ssh" == "y" ]]; then
+    read -p "Enter the remote host IP or hostname: " remote_host
+    read -p "Enter the SSH username: " ssh_username
+    read -p "Enter the path to the script on the remote host: " remote_script_path
+    ssh "$ssh_username@$remote_host" "bash $remote_script_path"
+fi
+
+#Download last version of the script:
+wget -O - https://raw.githubusercontent.com/svetlinsem/homelab/main/Cloudinit%20in%20proxmox/start.sh | bash
+
 # Prompt user to choose OS
 read -p "Choose OS (debian/ubuntu): " os_choice
 
@@ -31,12 +45,12 @@ if [[ "$add_guest_agent" == "y" ]]; then
 fi
 
 # Prompt user for VM configuration
-read -p  vm_number = "Enter VM number: " 
-read -p "Enter VM Name: " name
-read -p "Enter memory (MB): " memory
-read -p "Enter network bridge (vmbr0): " network_bridge
-read -p "Enter disk size (GB): " disk_size
-read -p "Enter storage pool (local-lvm): " storage_pool
+read -p "Enter VM number:" vm_number
+read -p "Enter VM Name:" name
+read -p "Enter memory (MB):" memory
+read -p "Enter network bridge (vmbr0):" network_bridge
+read -p "Enter disk size (GB):" disk_size
+read -p "Enter storage pool (local-lvm):" storage_pool
 
 
 
