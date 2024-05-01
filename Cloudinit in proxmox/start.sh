@@ -7,7 +7,6 @@ read -p "Do you want to use SSH to connect to a remote host? (y/n): " use_ssh
 if [[ "$use_ssh" == "y" ]]; then
     read -p "Enter the remote host IP or hostname: " remote_host
     read -p "Enter the SSH username: " ssh_username
-    read -p "Enter the path to the script on the remote host: " remote_script_path
     ssh "$ssh_username@$remote_host" "bash $remote_script_path"
 fi
 
