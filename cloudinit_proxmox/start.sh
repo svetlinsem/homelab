@@ -3,6 +3,9 @@
 # Set dialog menu title
 TITLE="Select OS"
 
+# Initialize os_choice
+os_choice=""
+
 # Prompt user to choose OS
 items=(1 "Debian 12"
        2 "Ubuntu 22.04"
@@ -12,25 +15,24 @@ while choice=$(dialog --title "$TITLE" \
                  --menu "Please select" 10 40 3 "${items[@]}" \
                  2>&1 >/dev/tty)
 do
-    case $choice in
-        1) os_choice="Debian 12";;
-        2) os_choice="Ubuntu 22.04";;
-        3) read -p "Enter custom ISO URL (leave empty to proceed without custom ISO): " custom_iso_url
-           if [[ -n "$custom_iso_url" ]]; then
-               wget "$custom_iso_url" -O custom.iso
-               selected_os="custom.iso"
-           else
-               echo "ISO already exists. Proceeding."
-           fi
-           ;;
+  case $choice in
+     1) os_choice="Debian 12"; selected_os="debian-12-generic-amd64.qcow2";;
+     2) os_choice="Ubuntu 22.04"; selected_os="ubuntu-22.04-server-cloudimg-amd64.img";;
+     3) read -p "Enter custom ISO URL (leave empty to proceed without custom ISO): " custom_iso_url
+       if [[ -n "$custom_iso_url" ]]; then
+         wget "$custom_iso_url" -O custom.iso
+         selected_os="custom.iso"
+       else
+         echo "ISO already exists. Proceeding."
+       fi
+       ;;
     esac
-done
+  done
 clear # Clear after user pressed Cancel
+
 
 # Set a variable to track the selected OS
 selected_os=""
-
-
 
 # Check if the ISO file exists or allow custom ISO
 if [[ "$os_choice" == "Debian 12" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
