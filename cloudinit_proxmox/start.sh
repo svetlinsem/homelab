@@ -8,10 +8,10 @@ selected_os=""
 
 
 # Check if the ISO file exists or allow custom ISO
-if [[ "$os_choice" == "debian" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
+if [[ "$os_choice" == "Debian 12" && ! -f "debian-12-generic-amd64.qcow2" ]]; then
     wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2
     selected_os="debian-12-generic-amd64.qcow2"
-elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img" ]]; then
+elif [[ "$os_choice" == "Ubuntu 22.04" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img" ]]; then
     wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="ubuntu-22.04-server-cloudimg-amd64.img"
 else
