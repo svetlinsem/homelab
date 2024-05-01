@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# Prompt user to choose SSH or local execution
-read -p "Do you want to use SSH to connect to a remote host? (y/n): " use_ssh
-
-# SSH in Proxmox
-if [[ "$use_ssh" == "y" ]]; then
-    read -p "Enter the remote host IP or hostname: " remote_host
-    read -p "Enter the SSH username: " ssh_username
-    ssh "$ssh_username@$remote_host" "bash $remote_script_path"
-fi
-
 #Download last version of the script:
 wget -O - https://raw.githubusercontent.com/svetlinsem/homelab/main/Cloudinit%20in%20proxmox/start.sh | bash
 
