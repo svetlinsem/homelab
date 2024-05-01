@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#Download last version of the script:
-wget -O - https://raw.githubusercontent.com/svetlinsem/homelab/main/Cloudinit%20in%20proxmox/start.sh | bash
-
 # Prompt user to choose OS
 read -p "Choose OS (debian/ubuntu): " os_choice
 
