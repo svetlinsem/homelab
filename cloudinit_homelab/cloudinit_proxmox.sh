@@ -50,16 +50,14 @@ fi
 
 # Prompt user if they want to add a guest agent
 if whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agent"; then
-    # Add your installation command here
-    echo "Installing guest agent..."
-    apt install -y libguestfs-tools
-    virt-customize --install qemu-guest-agent -a "$selected_os"
-    echo "Guest agent installation completed."
-elif [[ $? -eq 1 ]]; then
-    echo "Guest agent installation skipped."
+  echo "Installing guest agent..."
+  apt install -y libguestfs-tools virt-customize --install qemu-guest-agent -a "$selected_os"
+  if [[ $? -eq 1 ]]; then
+    echo "Guest agent installation failed."
+  fi
 elif [[ $? -eq 255 ]]; then
-    echo "Cancelled."
-    exit 1
+  echo "Cancelled."
+  exit 1
 fi
 
 # Prompt user to press Enter before proceeding
