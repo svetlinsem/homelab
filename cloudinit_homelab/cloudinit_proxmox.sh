@@ -54,17 +54,22 @@ add_guest_agent=$(whiptail --yesno "Do you want to add a guest agent?" 8 78 --ti
 # Install the guest agent if requested
 if [[ "$add_guest_agent" == "true" ]]; then
     echo "Installing guest agent..."
-    if apt install -y libguestfs-tools; then
+
+    # Install libguestfs-tools
+    echo "Installing libguestfs-tools..."
+    if  apt-get install -y libguestfs-tools; then
         echo "libguestfs-tools installed successfully."
     else
         echo "Error installing libguestfs-tools"
         exit 1
     fi
 
+    # Install qemu-guest-agent
+    echo "Installing qemu-guest-agent..."
     if virt-customize --install qemu-guest-agent -a "$selected_os"; then
-        echo "Guest agent installed successfully."
+        echo "qemu-guest-agent installed successfully."
     else
-        echo "Error installing guest agent"
+        echo "Error installing qemu-guest-agent"
         exit 1
     fi
 fi
