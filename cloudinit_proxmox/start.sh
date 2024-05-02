@@ -6,6 +6,12 @@ whiptail --title "Homelab Toolbox" --msgbox "Homelab Tool is easy way to create 
 # Initialize variables
 os_choice=""
 selected_os=""
+vm_number=""
+name=""
+memory=""
+network_bridge=""
+disk_size=""
+storage_pool=""
 
 # Prompt user to choose OS
 whiptail --title "Check list example" --radiolist \
@@ -58,12 +64,12 @@ if [[ "$add_guest_agent" == "y" ]]; then
 fi
 
 # Prompt user for VM configuration
-read -p "Enter VM number:" vm_number
-read -p "Enter VM Name:" name
-read -p "Enter memory (MB):" memory
-read -p "Enter network bridge (vmbr0):" network_bridge
-read -p "Enter disk size (GB):" disk_size
-read -p "Enter storage pool (local-lvm):" storage_pool
+vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2) 
+name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2) 
+memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 --title "VM Configuration" 3>&1 1>&2) 
+network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 --title "VM Configuration" 3>&1 1>&2)
+disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "" --title "VM Configuration" 3>&1 1>&2)
+storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm):" 8 78 "" --title "VM Configuration" 3>&1 1>&2)
 
 # Create cloud-init template
 qm create $vm_number --name $name --memory $memory --net0 virtio,bridge=$network_bridge

@@ -6,13 +6,18 @@ whiptail --title "Homelab Toolbox" --msgbox "Homelab Tool is an easy way to crea
 # Initialize variables
 os_choice=""
 selected_os=""
+vm_number=""
+name=""
+memory=""
+network_bridge=""
+disk_size=""
+storage_pool=""
 
 # Prompt user to choose OS
-choice=$(whiptail --title "Select OS" --radiolist \
-"Select OS" 20 78 4 \
-"Debian" "Debian 12" ON \
-"Ubuntu" "Ubuntu 22.04" OFF \
-"Custom OS" "Custom OS Example Router OS etc.." OFF \
+choice=$(whiptail --title "Select OS" --menu "Select OS" 20 78 4 \
+"Debian" "Debian 12" \
+"Ubuntu" "Ubuntu 22.04" \
+"Custom OS" "Custom OS Example Router OS etc.." \
 3>&1 1>&2 2>&3)
 
 case $choice in
