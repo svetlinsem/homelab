@@ -64,9 +64,6 @@ fi
 # Prompt user to press Enter before proceeding
 whiptail --title "Press Enter" --msgbox "Press Enter to continue..." 8 78 || exit 1
 
-# Prompt user to press Enter before proceeding
-whiptail --title "Press Enter" --msgbox "Press Enter to continue..." 8 78 || exit 1
-
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
 name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
