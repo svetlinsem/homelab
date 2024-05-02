@@ -49,19 +49,16 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
 fi
 
 # Prompt user if they want to add a guest agent
-if whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agent"; then
-  echo "Installing guest agent..."
-  apt install -y libguestfs-tools virt-customize --install qemu-guest-agent -a "$selected_os"
-  if [[ $? -eq 1 ]]; then
-    echo "Guest agent installation failed."
-  fi
-elif [[ $? -eq 255 ]]; then
-  echo "Cancelled."
-  exit 1
+read -p "Do you want to add a guest agent? (y/n): " add_guest_agent
+
+# Install the guest agent if requested
+if [[ "$add_guest_agent" == "y" ]]; then
+    # Add your installation command here
+    echo "Installing guest agent..."
+    apt install -y libguestfs-tools
+    virt-customize --install qemu-guest-agent -a "$selected_os"
 fi
 
-# Prompt user to press Enter before proceeding
-whiptail --title "Press Enter" --msgbox "Press Enter to continue..." 8 78 || exit 1
 
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
