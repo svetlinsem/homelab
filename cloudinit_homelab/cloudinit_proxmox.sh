@@ -56,7 +56,7 @@ if [[ "$add_guest_agent" == "y" ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
-    virt-customize --install qemu-guest-agent -a "$selected_os"
+    virt-customize --install qemu-guest-agent -a $selected_os
 fi
 
 # Wait for user to press Enter before proceeding
