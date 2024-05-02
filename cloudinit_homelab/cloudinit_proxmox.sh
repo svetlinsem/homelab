@@ -54,6 +54,7 @@ if whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agen
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
     virt-customize --install qemu-guest-agent -a "$selected_os"
+    echo "Guest agent installation completed."
 elif [[ $? -eq 1 ]]; then
     echo "Guest agent installation skipped."
 elif [[ $? -eq 255 ]]; then
