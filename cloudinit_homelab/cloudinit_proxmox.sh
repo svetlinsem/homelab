@@ -16,7 +16,7 @@ add_guest_agent=""
 custom_iso_url=""
 
 # Prompt user to choose OS
-choice=$(whiptail --title "Check list example" --radiolist \
+choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Select OS" 20 78 4 \
 "Debian" "Debian 12" ON \
 "Ubuntu" "Ubuntu 22.04" OFF \
