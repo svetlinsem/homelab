@@ -17,7 +17,7 @@ custom_iso_url=""
 
 # Prompt user to choose mode
 mode=$(whiptail --title "Select Mode" --menu "Choose between default and advanced mode:" 15 60 4 \
-"Default" "Default Mode" \
+"Default" "Basic mode" \
 "Advanced" "Advanced Mode" 3>&1 1>&2 2>&3)
 
 # Check mode and set variables accordingly
