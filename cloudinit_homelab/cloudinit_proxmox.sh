@@ -56,6 +56,8 @@ echo "Installing guest agent..."
 apt install -y libguestfs-tools
 virt-customize --install qemu-guest-agent -a "$selected_os"
 
+# Prompt user to press Enter before proceeding
+whiptail --title "Press Enter" --msgbox "Press Enter to continue..." 8 78
 
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
