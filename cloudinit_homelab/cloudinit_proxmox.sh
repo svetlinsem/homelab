@@ -49,10 +49,10 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
 fi
 
 # Prompt user if they want to add a guest agent
-read -p "Do you want to add a guest agent? (y/n):" add_guest_agent
+add_guest_agent=$(whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agent" 3>&1 1>&2 2>&3)
 
 # Install the guest agent if requested
-if [[ "$add_guest_agent" == "y" ]]; then
+if [[ "$add_guest_agent" == "true" ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
