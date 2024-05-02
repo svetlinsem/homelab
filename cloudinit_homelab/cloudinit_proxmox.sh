@@ -53,7 +53,7 @@ echo "Do you want to add a guest agent? (yes/no)"
 read -r add_guest_agent
 
 # Install the guest agent if requested
-if [[ "$add_guest_agent" == "yes" ]]; then
+if [[ "$add_guest_agent" == "y" ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
