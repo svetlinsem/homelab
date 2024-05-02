@@ -12,6 +12,8 @@ memory=""
 network_bridge=""
 disk_size=""
 storage_pool=""
+add_guest_agent=""
+custom_iso_url=""
 
 # Prompt user to choose OS
 whiptail --title "Check list example" --radiolist \
@@ -53,10 +55,10 @@ else
 fi
 
 # Prompt user if they want to add a guest agent
-echo "Do you want to add a guest agent? (y/n): " add_guest_agent
+add_guest_agent=$(whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agent" 3>&1 1>&2 2>&3)
 
 # Install the guest agent if requested
-if [[ "$add_guest_agent" == "y" ]]; then
+if [[ "$add_guest_agent" == "true" ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
@@ -64,12 +66,12 @@ if [[ "$add_guest_agent" == "y" ]]; then
 fi
 
 # Prompt user for VM configuration
-vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2) 
-name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2) 
-memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 --title "VM Configuration" 3>&1 1>&2) 
-network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 --title "VM Configuration" 3>&1 1>&2)
-disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "" --title "VM Configuration" 3>&1 1>&2)
-storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm):" 8 78 "" --title "VM Configuration" 3>&1 1>&2)
+vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
 
 # Create cloud-init template
 qm create $vm_number --name $name --memory $memory --net0 virtio,bridge=$network_bridge
@@ -78,7 +80,7 @@ qm set $vm_number --scsihw virtio-scsi-pci --scsi0 $storage_pool:vm-$vm_number-d
 qm set $vm_number --ide2 $storage_pool:cloudinit
 qm set $vm_number --boot c --bootdisk scsi0
 qm set $vm_number --ipconfig0 ip=dhcp
-qm resize $vm_number scsi0 $disk_size 
+qm resize $vm_number scsi0 $disk_size
 
 # Prompt user if they want to create a template
 read -p "Do you want to create a template? (y/n): " create_template
