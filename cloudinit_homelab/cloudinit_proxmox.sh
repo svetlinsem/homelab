@@ -16,24 +16,25 @@ add_guest_agent=""
 custom_iso_url=""
 
 # Prompt user to choose OS
-whiptail --title "Check list example" --radiolist \
+choice=$(whiptail --title "Check list example" --radiolist \
 "Select OS" 20 78 4 \
-"Debian" "Debian 12" ON \ debian-12-generic-amd64.qcow2
-"Ubuntu" "Ubuntu 22.04" OFF \ ubuntu-22.04-server-cloudimg-amd64.img
-"Custom OS" "Custom OS Example Router OS etc.." OFF custom_iso_url
+"Debian" "Debian 12" ON \
+"Ubuntu" "Ubuntu 22.04" OFF \
+"Custom OS" "Custom OS Example Router OS etc.." OFF \
+3>&1 1>&2 2>&3)
 
-    case $choice in
-       "Debian") os_choice="Debian 12";;
-       "Ubuntu") os_choice="Ubuntu 22.04";;
-       "Custom OS") COLOR=$(whiptail --inputbox "What is your favorite Color?" 8 39 Blue --title "Example Dialog" ) custom_iso_url
-           if [[ -n "$custom_iso_url" ]]; then
-               wget "$custom_iso_url" -O custom.iso
-               selected_os="custom.iso"
-           else
-               echo "ISO already exists. Proceeding."
-           fi
-           ;;
-    esac
+case $choice in
+    "Debian") os_choice="Debian 12";;
+    "Ubuntu") os_choice="Ubuntu 22.04";;
+    "Custom OS") custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3)
+        if [[ -n "$custom_iso_url" ]]; then
+            wget "$custom_iso_url" -O custom.iso
+            selected_os="custom.iso"
+        else
+            echo "ISO already exists. Proceeding."
+        fi
+        ;;
+esac
 
 clear # Clear after user pressed Cancel
 
