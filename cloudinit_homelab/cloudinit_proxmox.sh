@@ -59,6 +59,8 @@ if [[ "$add_guest_agent" == "y" ]]; then
     virt-customize --install qemu-guest-agent -a "$selected_os"
 fi
 
+# Wait for user to press Enter before proceeding
+read -rp "Press Enter to continue..." 
 
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
