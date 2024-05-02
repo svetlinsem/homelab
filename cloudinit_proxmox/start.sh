@@ -8,10 +8,10 @@ os_choice=""
 selected_os=""
 vm_number=""
 name=""
+storage_pool=""
 memory=""
 network_bridge=""
 disk_size=""
-storage_pool=""
 add_guest_agent=""
 custom_iso_url=""
 
@@ -68,10 +68,11 @@ fi
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
 name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
 memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
 network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
 disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
-storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+
 
 # Create cloud-init template
 qm create $vm_number --name $name --memory $memory --net0 virtio,bridge=$network_bridge
