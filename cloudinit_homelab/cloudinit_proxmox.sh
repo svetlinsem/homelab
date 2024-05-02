@@ -16,18 +16,18 @@ add_guest_agent=""
 custom_iso_url=""
 
 # Prompt user to choose OS
-choice=$(whiptail --title "Please choose your OS" --radiolist \ || exit 1
+choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Select OS" 20 78 4 \
 "Debian" "Debian 12" ON \
 "Ubuntu" "Ubuntu 22.04" OFF \
 "Custom OS" "Custom OS Example Router OS etc.." OFF \
-3>&1 1>&2 2>&3)
+3>&1 1>&2 2>&3) || exit 1
 
 case $choice in
     "Debian") os_choice="debian";;
     "Ubuntu") os_choice="ubuntu";;
-    "Custom OS") 
-        custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3)
+    "Custom OS")
+        custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3) || exit 1
         if [[ -n "$custom_iso_url" ]]; then
             wget "$custom_iso_url" -O custom.iso || { echo "Error downloading custom ISO"; exit 1; }
             selected_os="custom.iso"
@@ -49,18 +49,17 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
 fi
 
 # Prompt user if they want to add a guest agent
-read -p "Do you want to add a guest agent? (y/n):" add_guest_agent
-
-# Install the guest agent if requested
-if [[ "$add_guest_agent" == "y" ]]; then
+whiptail --yesno "Do you want to add a guest agent?" 8 78
+add_guest_agent=$?
+if [[ $add_guest_agent -eq 0 ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
-    virt-customize --install qemu-guest-agent -a "$selected_os"
+    virt-customize --install qemu-guest-agent -a "$selected_os" || { echo "Error installing guest agent"; exit 1; }
 fi
 
 # Wait for user to press Enter before proceeding
-read -rp "Press Enter to continue..." 
+read -rp "Press Enter to continue..."
 
 # Prompt user for VM configuration
 vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
@@ -78,7 +77,6 @@ qm set "$vm_number" --ide2 "$storage_pool":cloudinit || { echo "Error setting ID
 qm set "$vm_number" --boot c --bootdisk scsi0 || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --ipconfig0 ip=dhcp
 
-
 # Prompt user if they want to create a template
 read -p "Do you want to create a template? (y/n): " create_template
 
@@ -88,6 +86,6 @@ if [[ "$create_template" == "y" ]]; then
     echo "Creating template..."
     # Modify the script as needed
 fi
-qm template $vm_number
+qm template "$vm_number"
 
-rm -f $selected_os
+rm -f "$selected_os"
