@@ -14,31 +14,31 @@ network_bridge=""
 disk_size=""
 add_guest_agent=""
 custom_iso_url=""
-create_template=""
 
-# Prompt user to choose operation mode
-mode_choice=$(whiptail --title "Operation Mode" --radiolist \
-"Select the operation mode" 20 78 2 \
-"Default" "Create VM with default settings" ON \
-"Advanced" "Customize VM settings" OFF \
-3>&1 1>&2 2>&3)
+# Prompt user to choose mode
+mode=$(whiptail --title "Select Mode" --menu "Choose between default and advanced mode:" 15 60 4 \
+"Default" "Default Mode" \
+"Advanced" "Advanced Mode" 3>&1 1>&2 2>&3)
 
-# Set default values for variables based on operation mode
-case $mode_choice in
+# Check mode and set variables accordingly
+case $mode in
     "Default")
+        # Set default values
         storage_pool="local-lvm"
         memory="512"
         network_bridge="vmbr0"
-        disk_size="20"
+        disk_size="10"
         ;;
     "Advanced")
-        # Prompt user for VM configuration
-        vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
+        # Prompt user to set values
+        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "local-lvm" --title "Storage Pool" 3>&1 1>&2 2>&3)
+        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "512" --title "Memory" 3>&1 1>&2 2>&3)
+        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "vmbr0" --title "Network Bridge" 3>&1 1>&2 2>&3)
+        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "10" --title "Disk Size" 3>&1 1>&2 2>&3)
+        ;;
+    *)
+        # Handle Cancel button or other unexpected input
+        exit 1
         ;;
 esac
 
@@ -48,13 +48,13 @@ choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Debian" "Debian 12" ON \
 "Ubuntu" "Ubuntu 22.04" OFF \
 "Custom OS" "Custom OS Example Router OS etc.." OFF \
-3>&1 1>&2 2>&3) || exit 1
+3>&1 1>&2 2>&3)
 
 case $choice in
     "Debian") os_choice="debian";;
     "Ubuntu") os_choice="ubuntu";;
     "Custom OS") 
-        custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3) || exit 1
+        custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3)
         if [[ -n "$custom_iso_url" ]]; then
             wget "$custom_iso_url" -O custom.iso || { echo "Error downloading custom ISO"; exit 1; }
             selected_os="custom.iso"
@@ -76,18 +76,21 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
 fi
 
 # Prompt user if they want to add a guest agent
-read -p "Do you want to add a guest agent? (y/n):" add_guest_agent
-
-# Install the guest agent if requested
-if [[ "$add_guest_agent" == "y" ]]; then
+whiptail --yesno "Do you want to add a guest agent?" 8 78
+add_guest_agent=$?
+if [[ $add_guest_agent -eq 0 ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
-    virt-customize --install qemu-guest-agent -a "$selected_os"
+    virt-customize --install qemu-guest-agent -a "$selected_os" || { echo "Error installing guest agent"; exit 1; }
 fi
 
 # Wait for user to press Enter before proceeding
-read -rp "Press Enter to continue..." 
+read -rp "Press Enter to continue..."
+
+# Prompt user for VM configuration
+vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
+name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
 
 # Create cloud-init template
 qm create "$vm_number" --name "$name" --memory "$memory" --net0 virtio,bridge="$network_bridge" || { echo "Error creating VM"; exit 1; }
