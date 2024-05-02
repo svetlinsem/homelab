@@ -78,20 +78,17 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
 fi
 
 # Prompt user if they want to add a guest agent
-read -p "Do you want to add a guest agent? (y/n):" add_guest_agent
-
-# Install the guest agent if requested
-if [[ "$add_guest_agent" == "y" ]]; then
+whiptail --yesno "Do you want to add a guest agent?" 8 78
+add_guest_agent=$?
+if [[ $add_guest_agent -eq 0 ]]; then
     # Add your installation command here
     echo "Installing guest agent..."
     apt install -y libguestfs-tools
-    virt-customize --install qemu-guest-agent -a "$selected_os"
+    virt-customize --install qemu-guest-agent -a "$selected_os" || { echo "Error installing guest agent"; exit 1; }
 fi
 
 # Wait for user to press Enter before proceeding
-read -rp "Press Enter to continue..." 
-
-
+read -rp "Press Enter to continue..."
 
 # Create cloud-init template
 qm create "$vm_number" --name "$name" --memory "$memory" --net0 virtio,bridge="$network_bridge" || { echo "Error creating VM"; exit 1; }
@@ -100,6 +97,9 @@ qm set "$vm_number" --scsihw virtio-scsi-pci --scsi0 "$storage_pool":vm-"$vm_num
 qm set "$vm_number" --ide2 "$storage_pool":cloudinit || { echo "Error setting IDE"; exit 1; }
 qm set "$vm_number" --boot c --bootdisk scsi0 || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --ipconfig0 ip=dhcp
+qm set "$vm_number" --agent enabled=1
+
+
 
 # Prompt user if they want to create a template
 create_template=$(whiptail --yesno "Do you want to create a template?" 8 78 --title "Template Creation" 3>&1 1>&2 2>&3)
