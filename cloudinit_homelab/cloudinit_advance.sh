@@ -53,10 +53,12 @@ case $mode in
         esac
 
         # Prompt user to configure other settings
-        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "" --title "Storage Pool" 3>&1 1>&2 2>&3)
-        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "" --title "Memory" 3>&1 1>&2 2>&3)
-        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "" --title "Network Bridge" 3>&1 1>&2 2>&3)
-        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "" --title "Disk Size" 3>&1 1>&2 2>&3)
+        vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
+        name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
+        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
+        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "" --title "Memory" 3>&1 1>&2 2>&3) || exit 1
+        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
+        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "" --title "Disk Size" 3>&1 1>&2 2>&3) || exit 1
         ;;
     *)
         # Handle Cancel button or other unexpected input
@@ -89,9 +91,7 @@ fi
 # Wait for user to press Enter before proceeding
 read -rp "Press Enter to continue..." 
 
-# Prompt user for VM configuration
-vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
+
 
 # Create cloud-init template
 qm create "$vm_number" --name "$name" --memory "$memory" --net0 virtio,bridge="$network_bridge" || { echo "Error creating VM"; exit 1; }
