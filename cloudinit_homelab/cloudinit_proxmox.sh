@@ -48,9 +48,6 @@ elif [[ "$os_choice" == "ubuntu" && ! -f "ubuntu-22.04-server-cloudimg-amd64.img
     selected_os="ubuntu-22.04-server-cloudimg-amd64.img"
 fi
 
-# Prompt user if they want to add a guest agent
-add_guest_agent=$(whiptail --yesno "Do you want to add a guest agent?" 8 78 --title "Guest Agent" 3>&1 1>&2 2>&3)
-
 # Inform the user about the guest agent installation
 whiptail --msgbox "The guest agent will be installed." 8 78
 
