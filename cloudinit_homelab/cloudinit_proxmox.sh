@@ -54,7 +54,7 @@ download_os() {
     case $os_choice in
         "Debian")
             wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2 || { echo "Error downloading Debian ISO"; exit 1; }
-            selected_os=$("debian-12-generic-amd64.qcow2")
+            selected_os="debian-12-generic-amd64.qcow2"
             ;;
         "Ubuntu")
             wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img || { echo "Error downloading Ubuntu ISO"; exit 1; }
@@ -64,7 +64,7 @@ download_os() {
             custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3)
             if [[ -n "$custom_iso_url" ]]; then
                 wget "$custom_iso_url" -O custom.iso || { echo "Error downloading custom ISO"; exit 1; }
-                selected_os="custom.iso"
+                $selected_os="custom.iso"
             else
                 echo "Custom ISO URL not provided. Exiting."
                 exit 1
@@ -121,7 +121,7 @@ while true; do
 done
 
 # Check if OS is downloaded, if not, download it
-if [[ ! -f $selected_os ]]; then
+if [[ ! -e $selected_os ]]; then
     download_os
 fi
 
