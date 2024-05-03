@@ -97,7 +97,7 @@ while true; do
 done
 
 # Prompt user to enter storage pool
-storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
+storage_pool=$(whiptail --inputbox "Enter storage pool (local-lvm/zfs):" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
 
 # Prompt user to enter memory
 while true; do
@@ -109,7 +109,7 @@ while true; do
 done
 
 # Prompt user to enter network bridge
-network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
+network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
 
 # Prompt user to enter disk size
 while true; do
@@ -121,7 +121,7 @@ while true; do
 done
 
 # Download OS if needed
-download_os
+#download_os
 
 
 # Prompt user if they want to add a guest agent
@@ -149,10 +149,10 @@ qm set "$vm_number" --agent enabled=1
 
 
 # Prompt user if they want to create a template
-create_template=$(whiptail --yesno "Do you want to create a template?" 8 78 --title "Template Creation" 3>&1 1>&2 2>&3)
-
+whiptail --yesno "Do you want to create a template?" 8 78 
+create_template=$
 # If user wants to create a template, modify the script accordingly
-if [[ "$create_template" == "true" ]]; then
+if [[ "$create_template" == -eq 0 ]]; then
     # Add template creation logic here
     echo "Creating template..."
     qm template "$vm_number"
