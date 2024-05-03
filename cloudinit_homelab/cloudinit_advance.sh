@@ -30,28 +30,6 @@ case $mode in
         disk_size="10"
         ;;
     "Advanced")
-        # Prompt user to choose OS
-        choice=$(whiptail --title "Please choose your OS" --radiolist \
-        "Select OS" 20 78 4 \
-        "Debian" "Debian 12" ON \
-        "Ubuntu" "Ubuntu 22.04" OFF \
-        "Custom OS" "Custom OS Example Router OS etc.." OFF \
-        3>&1 1>&2 2>&3)
-
-        case $choice in
-            "Debian") os_choice="debian";;
-            "Ubuntu") os_choice="ubuntu";;
-            "Custom OS") 
-                custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3)
-                if [[ -n "$custom_iso_url" ]]; then
-                    wget "$custom_iso_url" -O custom.iso || { echo "Error downloading custom ISO"; exit 1; }
-                    selected_os="custom.iso"
-                else
-                    echo "ISO already exists. Proceeding."
-                fi
-                ;;
-        esac
-
         # Prompt user to configure other settings
         vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
         name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
