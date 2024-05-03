@@ -9,6 +9,9 @@
 
 192.168.1.5 Cloudflaer
 192.168.1.11 Kemp
+192.168.1.12 pi-hole
+192.168.1.13 ngnix proxy
+
 
 192.168.1.20 Portainer
 192.168.1.21 Semaphore
