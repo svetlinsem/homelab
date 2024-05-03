@@ -55,10 +55,10 @@ case $mode in
         # Prompt user to configure other settings
         vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
         name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
-        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "" --title "Memory" 3>&1 1>&2 2>&3) || exit 1
-        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
-        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "" --title "Disk Size" 3>&1 1>&2 2>&3) || exit 1
+        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
+        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "$memory" --title "Memory" 3>&1 1>&2 2>&3) || exit 1
+        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
+        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3) || exit 1
         ;;
     *)
         # Handle Cancel button or other unexpected input
