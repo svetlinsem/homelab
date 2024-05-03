@@ -24,7 +24,7 @@ mode=$(whiptail --title "Select Mode" --menu "Choose between default and advance
 case $mode in
     "Default")
         # Set default values
-        storage_pool="local-lvm"
+        storage_pool="local-zfs"
         memory="512"
         network_bridge="vmbr0"
         disk_size="10"
