@@ -54,7 +54,7 @@ download_os() {
     case $os_choice in
         "Debian")
             wget https://cloud.debian.org/images/cloud/bookworm/latest/debian-12-generic-amd64.qcow2 -O debian-12-generic-amd64.qcow2 || { echo "Error downloading Debian ISO"; exit 1; }
-            selected_os="debian-12-generic-amd64.qcow2"
+            selected_os=$("debian-12-generic-amd64.qcow2")
             ;;
         "Ubuntu")
             wget https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img -O ubuntu-22.04-server-cloudimg-amd64.img || { echo "Error downloading Ubuntu ISO"; exit 1; }
