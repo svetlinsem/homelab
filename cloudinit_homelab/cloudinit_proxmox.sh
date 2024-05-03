@@ -49,11 +49,6 @@ os_choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Custom OS" "Custom OS Example Router OS etc.." OFF \
 3>&1 1>&2 2>&3) || exit 1
 
-# Check if OS is downloaded, if not, download it
-if [[ ! -f $selected_os ]]; then
-    download_os
-fi
-
 # Function to download OS
 download_os() {
     case $os_choice in
@@ -124,6 +119,11 @@ while true; do
     fi
     break
 done
+
+# Check if OS is downloaded, if not, download it
+if [[ ! -f $selected_os ]]; then
+    download_os
+fi
 
 # Prompt user if they want to add a guest agent
 whiptail --yesno "Do you want to add a guest agent?" 8 78
