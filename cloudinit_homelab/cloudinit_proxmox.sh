@@ -121,7 +121,7 @@ while true; do
 done
 
 # Download OS if needed
-#download_os
+download_os
 
 
 # Prompt user if they want to add a guest agent
