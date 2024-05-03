@@ -16,7 +16,7 @@ fi
 validate_number() {
     if [[ ! "$1" =~ ^[0-9]+$ ]]; then
         echo "$2 must be a number" 1>&2
-        exit 1
+        return 1
     fi
 }
 
@@ -24,9 +24,23 @@ validate_number() {
 validate_alphanumeric() {
     if [[ ! "$1" =~ ^[[:alnum:]]+$ ]]; then
         echo "$2 must be alphanumeric" 1>&2
-        exit 1
+        return 1
     fi
 }
+
+
+# Initialize variables
+os_choice=""
+selected_os=""
+vm_number=""
+name=""
+storage_pool=""
+memory=""
+network_bridge=""
+disk_size=""
+add_guest_agent=""
+custom_iso_url=""
+
 
 # Function to download OS
 download_os() {
@@ -64,37 +78,51 @@ os_choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Custom OS" "Custom OS Example Router OS etc.." OFF \
 3>&1 1>&2 2>&3) || exit 1
 
-# Check if OS is downloaded, if not, download it
-if [[ ! -f "$selected_os" ]]; then
-    download_os
-fi
-
-# Check if OS is downloaded, if not, download it
-if [[ ! -f "$selected_os" ]]; then
-    download_os
-fi
-
 # Prompt user to enter VM number
-vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
-validate_number "$vm_number" "VM number"
+while true; do
+    vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+    if ! validate_number "$vm_number" "VM number"; then
+        continue
+    fi
+    break
+done
 
 # Prompt user to enter VM name
-name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
-validate_alphanumeric "$name" "VM name"
+while true; do
+    name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3)
+    if ! validate_alphanumeric "$name" "VM name"; then
+        continue
+    fi
+    break
+done
 
 # Prompt user to enter storage pool
-storage_pool=$(whiptail --inputbox "Enter storage pool (default local-lvm/zfs):" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
+storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
 
 # Prompt user to enter memory
-memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "$memory" --title "Memory" 3>&1 1>&2 2>&3)
-validate_number "$memory" "Memory"
+while true; do
+    memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "$memory" --title "Memory" 3>&1 1>&2 2>&3)
+    if ! validate_number "$memory" "Memory"; then
+        continue
+    fi
+    break
+done
 
 # Prompt user to enter network bridge
-network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
+network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
 
 # Prompt user to enter disk size
-disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3)
-validate_number "$disk_size" "Disk size"
+while true; do
+    disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3)
+    if ! validate_number "$disk_size" "Disk size"; then
+        continue
+    fi
+    break
+done
+
+# Download OS if needed
+download_os
+
 
 # Prompt user if they want to add a guest agent
 whiptail --yesno "Do you want to add a guest agent?" 8 78
