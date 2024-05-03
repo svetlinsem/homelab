@@ -15,27 +15,25 @@ disk_size=""
 add_guest_agent=""
 custom_iso_url=""
 
-# Check mode and set variables accordingly
-case $mode in
-    "Default")
-        # Set default values
-        storage_pool="local-zfs"
-        memory="512"
-        network_bridge="vmbr0"
-        disk_size="10"
-        ;;
-    "Advanced")
-        # Prompt user to configure other settings
-        vm_number=$(whiptail --inputbox "Enter VM number:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        name=$(whiptail --inputbox "Enter VM name:" 8 78 --title "VM Configuration" 3>&1 1>&2 2>&3) || exit 1
-        storage_pool=$(whiptail --inputbox "Enter storage pool:" 8 78 "$storage_pool" --title "Storage Pool" 3>&1 1>&2 2>&3) || exit 1
-        memory=$(whiptail --inputbox "Enter memory (MB):" 8 78 "$memory" --title "Memory" 3>&1 1>&2 2>&3) || exit 1
-        network_bridge=$(whiptail --inputbox "Enter network bridge:" 8 78 "$network_bridge" --title "Network Bridge" 3>&1 1>&2 2>&3) || exit 1
-        disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3) || exit 1
-        ;;
-    *)
-        # Handle Cancel button or other unexpected input
-        exit 1
+# Prompt user to choose OS
+choice=$(whiptail --title "Please choose your OS" --radiolist \
+"Select OS" 20 78 4 \
+"Debian" "Debian 12" ON \
+"Ubuntu" "Ubuntu 22.04" OFF \
+"Custom OS" "Custom OS Example Router OS etc.." OFF \
+3>&1 1>&2 2>&3) || exit 1
+
+case $choice in
+    "Debian") os_choice="debian";;
+    "Ubuntu") os_choice="ubuntu";;
+    "Custom OS")
+        custom_iso_url=$(whiptail --inputbox "Enter Custom ISO URL:" 8 39 --title "Custom OS URL" 3>&1 1>&2 2>&3) || exit 1
+        if [[ -n "$custom_iso_url" ]]; then
+            wget "$custom_iso_url" -O custom.iso || { echo "Error downloading custom ISO"; exit 1; }
+            selected_os="custom.iso"
+        else
+            echo "ISO already exists. Proceeding."
+        fi
         ;;
 esac
 
