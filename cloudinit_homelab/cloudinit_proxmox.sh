@@ -70,6 +70,7 @@ download_os() {
     esac
 }
 
+
 # Prompt user to choose OS
 os_choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Select OS" 20 78 4 \
@@ -77,6 +78,11 @@ os_choice=$(whiptail --title "Please choose your OS" --radiolist \
 "Ubuntu" "Ubuntu 22.04" OFF \
 "Custom OS" "Custom OS Example Router OS etc.." OFF \
 3>&1 1>&2 2>&3) || exit 1
+
+# Check if OS is downloaded, if not, download it
+if [[ ! -f "$selected_os" ]]; then
+    download_os
+fi
 
 # Prompt user to enter VM number
 while true; do
@@ -119,10 +125,6 @@ while true; do
     fi
     break
 done
-
-# Download OS if needed
-download_os
-
 
 # Prompt user if they want to add a guest agent
 whiptail --yesno "Do you want to add a guest agent?" 8 78
