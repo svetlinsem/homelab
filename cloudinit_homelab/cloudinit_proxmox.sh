@@ -153,7 +153,7 @@ qm set "$vm_number" --agent enabled=1
 whiptail --yesno "Do you want to create a template?" 8 78 
 create_template=$
 # If user wants to create a template, modify the script accordingly
-if [[ $create_template == -eq 0 ]]; then
+if [[ $create_template -eq 0 ]]; then
     # Add template creation logic here
     echo "Creating template..."
     qm template "$vm_number"
