@@ -41,6 +41,18 @@ disk_size=""
 add_guest_agent=""
 custom_iso_url=""
 
+# Prompt user to choose OS
+os_choice=$(whiptail --title "Please choose your OS" --radiolist \
+"Select OS" 20 78 4 \
+"Debian" "Debian 12" ON \
+"Ubuntu" "Ubuntu 22.04" OFF \
+"Custom OS" "Custom OS Example Router OS etc.." OFF \
+3>&1 1>&2 2>&3) || exit 1
+
+# Check if OS is downloaded, if not, download it
+if [[ ! -f $selected_os ]]; then
+    download_os
+fi
 
 # Function to download OS
 download_os() {
@@ -70,19 +82,6 @@ download_os() {
     esac
 }
 
-
-# Prompt user to choose OS
-os_choice=$(whiptail --title "Please choose your OS" --radiolist \
-"Select OS" 20 78 4 \
-"Debian" "Debian 12" ON \
-"Ubuntu" "Ubuntu 22.04" OFF \
-"Custom OS" "Custom OS Example Router OS etc.." OFF \
-3>&1 1>&2 2>&3) || exit 1
-
-# Check if OS is downloaded, if not, download it
-if [[ ! -f "$selected_os" ]]; then
-    download_os
-fi
 
 # Prompt user to enter VM number
 while true; do
@@ -154,7 +153,7 @@ qm set "$vm_number" --agent enabled=1
 whiptail --yesno "Do you want to create a template?" 8 78 
 create_template=$
 # If user wants to create a template, modify the script accordingly
-if [[ "$create_template" == -eq 0 ]]; then
+if [[ $create_template == -eq 0 ]]; then
     # Add template creation logic here
     echo "Creating template..."
     qm template "$vm_number"
