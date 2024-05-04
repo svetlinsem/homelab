@@ -1,4 +1,4 @@
-resource "proxmox_vm_qemu" "k8smastertest" {
+resource "proxmox_vm_qemu" "k8smaster" {
   target_node       = var.target_node
   name              = "k8smaster"
   vmid              = 600
@@ -37,7 +37,7 @@ resource "proxmox_vm_qemu" "k8smastertest" {
   nameserver = var.nameservers
 } 
 
-resource "proxmox_vm_qemu" "k8sworkertest" {
+resource "proxmox_vm_qemu" "k8sworker" {
   target_node       = var.target_node
   name              = "k8sworker${count.index + 1}"
   vmid              = "6${count.index + 10}"
