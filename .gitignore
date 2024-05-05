@@ -35,3 +35,5 @@ k8s_deploy/k8s_new_node/k8s_new_node_terraform/terraform.tfstate
 k8s_deploy/k8s_new_node/k8s_new_node_terraform/terraform.tfstate
 cloudinit_proxmox/link
 cloudinit_homelab/link
+chef-workstation_0.4.2-1_amd64.deb
+chef-workstation_0.4.2-1_amd64.deb:Zone.Identifier
