@@ -15,6 +15,7 @@
 
 192.168.1.20 Portainer
 192.168.1.21 Semaphore
+192.168.1.23 Jenkins
 
 192.168.1.30 Qbitorrent
 192.168.1.31 Sonarr
