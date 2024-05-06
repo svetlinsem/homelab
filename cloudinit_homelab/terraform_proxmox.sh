@@ -3,13 +3,8 @@
 # Function to install Terraform on Debian-based systems
 install_terraform_debian() {
     echo "Installing Terraform..."
-    # Add HashiCorp Debian repository
-    sudo apt-get install -y gnupg software-properties-common
-    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-    sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-    # Update and install Terraform
-    sudo apt-get update
-    sudo apt-get install -y terraform
+    sudo apt update
+    sudo apt install -y terraform
     if ! command -v terraform &> /dev/null; then
         echo "Error: Failed to install Terraform. Please install Terraform manually."
         exit 1
@@ -19,10 +14,17 @@ install_terraform_debian() {
 
 # Check if Terraform is installed
 if ! command -v terraform &> /dev/null; then
-    if [[ "$(uname -s)" == "Linux" && -f "/etc/debian_version" ]]; then
-        install_terraform_debian
+    echo "Terraform is not installed."
+    read -p "Do you want to install Terraform? (yes/no): " install_terraform
+    if [[ "$install_terraform" =~ ^[Yy][Ee][Ss]$ ]]; then
+        if [[ "$(uname -s)" == "Linux" && -f "/etc/debian_version" ]]; then
+            install_terraform_debian
+        else
+            echo "Error: Unsupported operating system. Please install Terraform manually."
+            exit 1
+        fi
     else
-        echo "Error: Terraform is not installed, and this script only supports Debian-based systems for automatic installation."
+        echo "Aborted. Terraform installation is required to proceed."
         exit 1
     fi
 fi
@@ -96,6 +98,86 @@ provider "proxmox" {
 }
 EOF
 
+# Terraform variables file
+cat <<EOF > vars.tf
+# Terraform variables file
+
+variable "vm_number" {
+  description = "VM Number"
+  default     = "${vm_number}"
+}
+
+variable "count" {
+  description = "Count"
+  default     = ${count}
+}
+
+variable "clone" {
+  description = "Clone"
+  default     = "${clone}"
+}
+
+variable "os_type" {
+  description = "OS Type"
+  default     = "${os_type}"
+}
+
+variable "scsihw" {
+  description = "SCSI Hardware"
+  default     = "${scsihw}"
+}
+
+variable "boot_order" {
+  description = "Boot Order"
+  default     = "${boot_order}"
+}
+
+variable "cpu" {
+  description = "CPU"
+  default     = ${cpu}
+}
+
+variable "cores" {
+  description = "Cores"
+  default     = ${cores}
+}
+
+variable "memory" {
+  description = "Memory"
+  default     = ${memory}
+}
+
+variable "vm_state" {
+  description = "VM State"
+  default     = "${vm_state}"
+}
+
+variable "agent" {
+  description = "Install Guest Agent?"
+  default     = "${agent}"
+}
+
+variable "onboot" {
+  description = "Start VM on boot?"
+  default     = "${onboot}"
+}
+
+variable "disk_storage" {
+  description = "Disk Storage"
+  default     = "${disk_storage}"
+}
+
+variable "disk_size" {
+  description = "Disk Size"
+  default     = ${disk_size}
+}
+
+variable "network_ip_config" {
+  description = "Network IP Configuration"
+  default     = "${network_ip_config}"
+}
+EOF
+
 # Terraform configuration file
 cat <<EOF > main.tf
 # Terraform configuration file for VM provisioning
@@ -143,4 +225,4 @@ echo "Project files are located in: $(pwd)"
 terraform init
 
 # Apply configuration
-terraform apply
+terraform plan
