@@ -104,77 +104,77 @@ cat <<EOF > vars.tf
 
 variable "vm_number" {
   description = "VM Number"
-  default     = "${vm_number}"
+  sring     = "${vm_number}"
 }
 
 variable "count" {
   description = "Count"
-  default     = ${count}
+  string     = ${count}
 }
 
 variable "clone" {
   description = "Clone"
-  default     = "${clone}"
+  string     = "${clone}"
 }
 
 variable "os_type" {
   description = "OS Type"
-  default     = "${os_type}"
+  string     = "${os_type}"
 }
 
 variable "scsihw" {
   description = "SCSI Hardware"
-  default     = "${scsihw}"
+  string     = "${scsihw}"
 }
 
 variable "boot_order" {
   description = "Boot Order"
-  default     = "${boot_order}"
+  string     = "${boot_order}"
 }
 
 variable "cpu" {
   description = "CPU"
-  default     = ${cpu}
+  string     = ${cpu}
 }
 
 variable "cores" {
   description = "Cores"
-  default     = ${cores}
+  string     = ${cores}
 }
 
 variable "memory" {
   description = "Memory"
-  default     = ${memory}
+  string     = ${memory}
 }
 
 variable "vm_state" {
   description = "VM State"
-  default     = "${vm_state}"
+  string     = "${vm_state}"
 }
 
 variable "agent" {
   description = "Install Guest Agent?"
-  default     = "${agent}"
+  string     = "${agent}"
 }
 
 variable "onboot" {
   description = "Start VM on boot?"
-  default     = "${onboot}"
+  string     = "${onboot}"
 }
 
 variable "disk_storage" {
   description = "Disk Storage"
-  default     = "${disk_storage}"
+  string     = "${disk_storage}"
 }
 
 variable "disk_size" {
   description = "Disk Size"
-  default     = ${disk_size}
+  string     = ${disk_size}
 }
 
 variable "network_ip_config" {
   description = "Network IP Configuration"
-  default     = "${network_ip_config}"
+  string     = "${network_ip_config}"
 }
 EOF
 
