@@ -1,5 +1,15 @@
 #!/bin/bash
 
+# Check if Terraform is installed
+if ! command -v terraform &> /dev/null; then
+    if [[ "$(uname -s)" == "Linux" && -f "/etc/debian_version" ]]; then
+        install_terraform_debian
+    else
+        echo "Error: Terraform is not installed, and this script only supports Debian-based systems for automatic installation."
+        exit 1
+    fi
+fi
+
 # Function to install Terraform on Debian-based systems
 install_terraform_debian() {
     echo "Installing Terraform..."
@@ -10,24 +20,6 @@ install_terraform_debian() {
         exit 1
     fi
     echo "Terraform installed successfully."
-}
-
-# Check if Terraform is installed
-if ! command -v terraform &> /dev/null; then
-    echo "Terraform is not installed."
-    read -p "Do you want to install Terraform? (yes/no): " install_terraform
-    if [[ "$install_terraform" =~ ^[Yy][Ee][Ss]$ ]]; then
-        if [[ "$(uname -s)" == "Linux" && -f "/etc/debian_version" ]]; then
-            install_terraform_debian
-        else
-            echo "Error: Unsupported operating system. Please install Terraform manually."
-            exit 1
-        fi
-    else
-        echo "Aborted. Terraform installation is required to proceed."
-        exit 1
-    fi
-fi
 
 # Function to prompt user for input with error handling
 prompt_input() {
