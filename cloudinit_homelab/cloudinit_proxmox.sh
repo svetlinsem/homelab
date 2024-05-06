@@ -41,6 +41,8 @@ disk_size=""
 add_guest_agent=""
 custom_iso_url=""
 disk_size_input=""
+username=""
+password=""
 
 # Prompt user to choose OS
 os_choice=$(whiptail --title "Please choose your OS" --radiolist \
@@ -166,3 +168,28 @@ if [[ $create_template -eq 0 ]]; then
     qm template "$vm_number"
     rm -f "$selected_os"
 fi
+
+# Prompt user if they want to edit the template
+whiptail --yesno "Do you want to edit the template?" 8 78 
+edit_template=$?
+
+if [[ $edit_template -eq 0 ]]; then
+    # Add template editing logic here
+    echo "Editing template..."
+    # Add your template editing command here
+
+
+# Prompt user to enter username
+username=$(whiptail --inputbox "Enter username:" 8 78 --title "User Configuration" 3>&1 1>&2 2>&3)
+
+# Prompt user to enter password
+password=$(whiptail --passwordbox "Enter password:" 8 78 --title "User Configuration" 3>&1 1>&2 2>&3)
+
+# Prompt user to enter SSH key
+ssh=$(whiptail --inputbox "Enter SSH key:" 8 78 --title "User Configuration" 3>&1 1>&2 2>&3)
+
+fi
+# Configure the template
+qm set "$vm_number" --ciuser "$username"
+qm set "$vm_number" --ciuser "$password"
+qm set "$vm_number" --sshkey "$ssh"
