@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# Function to install Terraform on Debian-based systems
+install_terraform_debian() {
+    echo "Installing Terraform..."
+    # Add HashiCorp Debian repository
+    sudo apt-get install -y gnupg software-properties-common
+    curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+    sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    # Update and install Terraform
+    sudo apt-get update
+    sudo apt-get install -y terraform
+    if ! command -v terraform &> /dev/null; then
+        echo "Error: Failed to install Terraform. Please install Terraform manually."
+        exit 1
+    fi
+    echo "Terraform installed successfully."
+}
+
 # Check if Terraform is installed
 if ! command -v terraform &> /dev/null; then
     if [[ "$(uname -s)" == "Linux" && -f "/etc/debian_version" ]]; then
@@ -9,17 +26,6 @@ if ! command -v terraform &> /dev/null; then
         exit 1
     fi
 fi
-
-# Function to install Terraform on Debian-based systems
-install_terraform_debian() {
-    echo "Installing Terraform..."
-    sudo apt update
-    sudo apt install -y terraform
-    if ! command -v terraform &> /dev/null; then
-        echo "Error: Failed to install Terraform. Please install Terraform manually."
-        exit 1
-    fi
-    echo "Terraform installed successfully."
 
 # Function to prompt user for input with error handling
 prompt_input() {
@@ -51,7 +57,6 @@ mkdir -p "$project_dir"
 cd "$project_dir" || exit 1
 
 # Prompt user for VM parameters
-prompt_input "Terraform Recource" vm
 prompt_input "Enter VM Number" vm_number
 prompt_input "Enter Count" count
 prompt_input "Enter Clone" clone
@@ -91,97 +96,12 @@ provider "proxmox" {
 }
 EOF
 
-# Terraform variables file
-cat <<EOF > vars.tf
-# Terraform variables file
-
-variable "vm_number" {
-  description = "Terrafor Resource"
-  default     = "${terraform.recource}"
-}
-
-variable "vm_number" {
-  description = "VM Number"
-  default     = "${vm_number}"
-}
-
-variable "count" {
-  description = "Count"
-  default     = ${count}
-}
-
-variable "clone" {
-  description = "Clone"
-  default     = "${clone}"
-}
-
-variable "os_type" {
-  description = "OS Type"
-  default     = "${os_type}"
-}
-
-variable "scsihw" {
-  description = "SCSI Hardware"
-  default     = "${scsihw}"
-}
-
-variable "boot_order" {
-  description = "Boot Order"
-  default     = "${boot_order}"
-}
-
-variable "cpu" {
-  description = "CPU"
-  default     = ${cpu}
-}
-
-variable "cores" {
-  description = "Cores"
-  default     = ${cores}
-}
-
-variable "memory" {
-  description = "Memory"
-  default     = ${memory}
-}
-
-variable "vm_state" {
-  description = "VM State"
-  default     = "${vm_state}"
-}
-
-variable "agent" {
-  description = "Install Guest Agent?"
-  default     = "${agent}"
-}
-
-variable "onboot" {
-  description = "Start VM on boot?"
-  default     = "${onboot}"
-}
-
-variable "disk_storage" {
-  description = "Disk Storage"
-  default     = "${disk_storage}"
-}
-
-variable "disk_size" {
-  description = "Disk Size"
-  default     = ${disk_size}
-}
-
-variable "network_ip_config" {
-  description = "Network IP Configuration"
-  default     = "${network_ip_config}"
-}
-EOF
-
 # Terraform configuration file
 cat <<EOF > main.tf
 # Terraform configuration file for VM provisioning
 
 # Resource definition for VM
-resource "proxmox_vm_qemu" "terraform.recource" {
+resource "proxmox_vm_qemu" "vm" {
   for_each   = toset(range(var.count))
   name       = "${var.vm_number}-${each.key}"
   clone      = var.clone
