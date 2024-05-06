@@ -119,10 +119,11 @@ network_bridge=$(whiptail --inputbox "Enter network bridge (vmbr0):" 8 78 "$netw
 
 # Prompt user to enter disk size
 while true; do
-    disk_size=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3)
-    if ! validate_number "$disk_size" "Disk size"; then
+    disk_size_input=$(whiptail --inputbox "Enter disk size (GB):" 8 78 "$disk_size" --title "Disk Size" 3>&1 1>&2 2>&3)
+    if ! validate_number "$disk_size_input" "Disk size"; then
         continue
     fi
+    disk_size="${disk_size_input}G"  # Append 'G' to indicate gigabytes
     break
 done
 
@@ -150,7 +151,7 @@ qm set "$vm_number" --ide2 "$storage_pool":cloudinit || { echo "Error setting ID
 qm set "$vm_number" --boot c --bootdisk scsi0 || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --ipconfig0 ip=dhcp || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --agent enabled=1 || { echo "Error setting boot disk"; exit 1; }
-qm disk resize "$vm_number" scsi0 "$disk_size"GB || { echo "Error resizing disk"; exit 1; }
+qm disk resize "$vm_number" scsi0 "$disk_size"G || { echo "Error resizing disk"; exit 1; }
 
 
 
