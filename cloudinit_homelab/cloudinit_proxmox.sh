@@ -40,6 +40,7 @@ network_bridge=""
 disk_size=""
 add_guest_agent=""
 custom_iso_url=""
+disk_size_input=""
 
 # Prompt user to choose OS
 os_choice=$(whiptail --title "Please choose your OS" --radiolist \
@@ -151,7 +152,7 @@ qm set "$vm_number" --ide2 "$storage_pool":cloudinit || { echo "Error setting ID
 qm set "$vm_number" --boot c --bootdisk scsi0 || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --ipconfig0 ip=dhcp || { echo "Error setting boot disk"; exit 1; }
 qm set "$vm_number" --agent enabled=1 || { echo "Error setting boot disk"; exit 1; }
-qm disk resize "$vm_number" scsi0 "$disk_size_input" || { echo "Error resizing disk"; exit 1; }
+qm disk resize "$vm_number" scsi0 "$disk_size" || { echo "Error resizing disk"; exit 1; }
 
 
 
