@@ -141,8 +141,6 @@ if [[ $add_guest_agent -eq 0 ]]; then
     virt-customize --install qemu-guest-agent -a "$selected_os" || { echo "Error installing guest agent"; exit 1; }
 fi
 
-# Wait for user to press Enter before proceeding
-read -rp "Press Enter to continue..."
 
 # Create cloud-init template
 qm create "$vm_number" --name "$name" --memory "$memory" --net0 virtio,bridge="$network_bridge" || { echo "Error creating VM"; exit 1; }
@@ -150,6 +148,7 @@ qm importdisk "$vm_number" "$selected_os" "$storage_pool" || { echo "Error impor
 qm set "$vm_number" --scsihw virtio-scsi-pci --scsi0 "$storage_pool":vm-"$vm_number"-disk-0 || { echo "Error setting SCSI"; exit 1; }
 qm set "$vm_number" --ide2 "$storage_pool":cloudinit || { echo "Error setting IDE"; exit 1; }
 qm set "$vm_number" --boot c --bootdisk scsi0 || { echo "Error setting boot disk"; exit 1; }
+qm resize "$vm_number" "$disk_size"GB
 qm set "$vm_number" --ipconfig0 ip=dhcp
 qm set "$vm_number" --agent enabled=1
 
@@ -157,7 +156,7 @@ qm set "$vm_number" --agent enabled=1
 
 # Prompt user if they want to create a template
 whiptail --yesno "Do you want to create a template?" 8 78 
-create_template=$
+create_template=$?
 # If user wants to create a template, modify the script accordingly
 if [[ $create_template -eq 0 ]]; then
     # Add template creation logic here
