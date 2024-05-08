@@ -41,14 +41,14 @@ resource "proxmox_vm_qemu" "k8sworker" {
   target_node       = var.target_node
   name              = "k8sworker${count.index + 1}"
   vmid              = "6${count.index + 10}"
-  count             = 1
+  count             = 3
   clone             = "debian12"
   os_type           = "cloud-init"
   scsihw            = "virtio-scsi-pci"
   boot              = "order=scsi0;ide2"
   cpu               = "host"
-  cores             = 2
-  memory            = 4000
+  cores             = 4
+  memory            = 8000
   vm_state          = "running"
   agent             = 1
   onboot            = true

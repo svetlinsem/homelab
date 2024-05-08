@@ -92,14 +92,13 @@ terraform {
 # Telmate Proxmox provider
 provider "proxmox" {
   pm_api_url         = "${pm_api_url}"
-  pm_tls_insecure    = true
   pm_api_token       = "${pm_api_token_id}"
   pm_api_token_secret = "${pm_api_token_secret}"
 }
 EOF
 
 # Terraform variables file
-cat <<EOF > vars.tf
+cat <<EOF > $project_name.auto.tfvars
 # Terraform variables file
 
 variable "vm_number" {
