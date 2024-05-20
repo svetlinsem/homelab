@@ -8,12 +8,20 @@
 192.168.1.7 Truenas 
 192.168.1.8 Nextcloud
 
-192.168.1.5 Cloudflaer - 192.168.1.10
+192.168.1.5 Cloudflaer
 192.168.1.11 Kemp
 192.168.1.12 pi-hole
 
 192.168.1.20 Portainer
 192.168.1.23 Jenkins
+
+192.168.1.30 Qbitorrent
+192.168.1.31 Sonarr
+192.168.1.32 Radarr
+192.168.1.33 Bazarr
+192.168.1.34 Provlarr
+192.168.1.35 Jelyserr
+192.168.1.36 Plex
 
 192.168.1.40 Grafana
 192.168.1.41 Loki
@@ -21,7 +29,7 @@
 192.168.1.43 influxdb2
 
 192.168.1.50 Tailscale
-192.168.1.150 Wireguard
+192.168.1.51 Wireguard
 
 
 

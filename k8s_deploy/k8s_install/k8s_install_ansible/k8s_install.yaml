@@ -144,7 +144,7 @@
 - hosts: k8s_master
   become: true
   tasks:
-    - name: nstall Kubectl
+    - name: Install Kubectl
       apt:
         name: kubectl=1.28.*
         state: present
