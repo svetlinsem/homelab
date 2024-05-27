@@ -12,6 +12,8 @@
 192.168.1.12 pi-hole
 
 192.168.1.20 Portainer
+192.168.1.20:5571 Dockge
+192.168.1.20:81 Nginx proxy
 
 192.168.1.40 Grafana
 192.168.1.41 Loki
@@ -22,10 +24,6 @@
 192.168.1.50 Tailscale
 192.168.1.51 Wireguard
 
-192.168.1.60 k8s_master
-192.168.1.61 k8s_worker1
-192.168.1.62 k8s_worker2
-
 192.168.1.250 vscode
 
 192.168.1.7:30024 qbitttoren
@@ -34,6 +32,7 @@
 192.168.1.7:30047 tautulli
 192.168.1.7:30042 jellyseerr
 192.168.1.7:32400 plex
+192.168.1.7:30050 prowlarr
 
 
 
