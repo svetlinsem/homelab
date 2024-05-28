@@ -1,5 +1,0 @@
-curl -sfL https://get.k3s.io | \
-    K3S_TOKEN="K10d3248d1880937ca09e9ecc0386d8e1728d12ddb97557d2fb29b669f17e4c2c51::server:08830cb9b98273a79c3adb897d8c0614" \
-    K3S_URL="https://192.168.1.70:6443" \
-    K3S_NODE_NAME="k3sworker3" \
-    sh -
