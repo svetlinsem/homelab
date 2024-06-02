@@ -1,0 +1,13 @@
+variable "target_node" { default = "proxmoxprod" }
+variable "memory" {  type = number }
+variable "cores" { type = string }
+variable "hostname" { type =  string }
+variable "unprivileged" { type = string }
+variable "ssh_public_keys" { type = string }
+variable "storage" { type = string }
+variable "size" { type = string }
+variable "vmid" { type = string }
+variable "counts" { type = string }
+variable "ip" { type = string }
+variable "password" { type = string }
+variable "ostype" { default = "debian" }

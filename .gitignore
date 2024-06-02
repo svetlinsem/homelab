@@ -41,3 +41,4 @@ k8s_deploy/config/config
 terraform/providers.tf
 terraform/vm/.terraform/providers/registry.terraform.io/telmate/proxmox/3.0.1-rc1/linux_amd64/terraform-provider-proxmox_v3.0.1-rc1
 das
+terraform/lxc/variables.auto.tfvars
