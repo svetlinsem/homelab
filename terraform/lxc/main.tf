@@ -26,7 +26,7 @@ resource "proxmox_lxc" "hostname" {
   network {
     name   = "eth0"
     bridge = "vmbr0"
-    ip     = "192.168.1.70/24"
+    ip     = "192.168.1.21/24"
     gw     = "192.168.1.1"
   }
 }
