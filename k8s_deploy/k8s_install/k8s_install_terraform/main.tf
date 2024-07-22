@@ -48,7 +48,7 @@ resource "proxmox_vm_qemu" "k8sworker" {
   boot              = "order=scsi0;ide2"
   cpu               = "host"
   cores             = 2
-  memory            = 4000
+  memory            = 8000
   vm_state          = "running"
   agent             = 1
   onboot            = true
@@ -57,7 +57,7 @@ resource "proxmox_vm_qemu" "k8sworker" {
     scsi  {
       scsi0  {
         disk {
-          size            = 10
+          size            = 15
           cache           = "writeback"
           storage         = "apps"
         }

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8sfunctions-deployment
+spec:
+  selector:
+    matchLabels:
+      app: k8sfunctions-pod
+  template:
+    metadata:
+      labels:
+        app: k8sfunctions-pod
+    spec:
+      containers:
+        - name: k8sfunctions-container
+          image: ghcr.io/arkapravasinha/k8sfunctions:v0.1.0
+          resources:
+            limits:
+              memory: 128Mi
+              cpu: 500m
+          ports:
+            - containerPort: 80
