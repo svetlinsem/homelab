@@ -154,39 +154,9 @@
   become: yes
   tasks:
 
-    - name: create an empty file for Kubeadm configuring
-      copy:
-        content: ""
-        dest: /etc/kubernetes/kubeadm-config.yaml
-        force: no
-
-    - name: configuring the container runtime including its cgroup driver
-      blockinfile:
-        path: /etc/kubernetes/kubeadm-config.yaml
-        block: |
-             kind: ClusterConfiguration
-             apiVersion: kubeadm.k8s.io/v1beta3
-             networking:
-               podSubnet: "10.244.0.0/16"
-             ---
-             kind: KubeletConfiguration
-             apiVersion: kubelet.config.k8s.io/v1beta1
-             runtimeRequestTimeout: "15m"
-             cgroupDriver: "systemd"
-             systemReserved:
-               cpu: 100m
-               memory: 350M
-             kubeReserved:
-               cpu: 100m
-               memory: 50M
-             enforceNodeAllocatable:
-             - pods
-
-    - name: initialize the cluster (this could take some time)
-      shell: kubeadm init --config /etc/kubernetes/kubeadm-config.yaml >> cluster_initialized.log
-      args:
-        chdir: /home/svetlinsem
-        creates: cluster_initialized.log
+    - name: Initialize Kubernetes master
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16
+      register: kubeadm_init
 
     - name: create .kube directory
       become: yes
@@ -206,7 +176,7 @@
     - name: install Pod network
       become: yes
       become_user: svetlinsem
-      shell: kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.log
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.log
       args:
         chdir: $HOME
         creates: pod_network_setup.log
@@ -284,116 +254,3 @@
       ansible.builtin.pip:
         name: kubernetes
         extra_args: "--break-system-packages"
-
-    - name: Download metallb manifest
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/metallb/metallb/v0.14.5/config/manifests/metallb-native.yaml
-        dest: ~/metallb-native.yaml
-
-    - name: Apply metallb manifest
-      kubernetes.core.k8s:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        state: present
-        src: ~/metallb-native.yaml
-
-    - name: Create a directory if it does not exist
-      ansible.builtin.file:
-        path: /metallb-config/
-        state: directory
-
-    - name: Create directory for metallb
-      template:
-        src: templates/metallb-config.yaml.j2
-        dest: /metallb-config/metallb-config.yaml
-
-    - name: Pause for 5 minutes to build app cache
-      ansible.builtin.pause:
-        minutes: 1
-
-    - name: Apply metallb-config/ipaddres-pool
-      kubernetes.core.k8s:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        state: present
-        src: /metallb-config/metallb-config.yaml
-
-    - name: Download ingres manifest
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/nginxinc/kubernetes-ingress/v3.5.0/deploy/crds.yaml
-        dest: ~/crds.yaml
-
-    - name: Add a repository Ingress-nginx
-      kubernetes.core.helm_repository:
-       name: stable
-       repo_url: https://kubernetes.github.io/ingress-nginx
-
-    - name: Install Ingress-nginx
-      kubernetes.core.helm:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        name: ingress-nginx
-        chart_ref: oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.2.0
-        release_namespace: ingress-nginx
-        create_namespace: true
-
-    - name: Apply metallb manifest
-      kubernetes.core.k8s:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        state: present
-        src: ~/crds.yaml
-
-    - name: Add a repository rancher-latest
-      kubernetes.core.helm_repository:
-       name: rancher-latest
-       repo_url: https://releases.rancher.com/server-charts/latest
-
-    - name: Add a repository jetstack
-      kubernetes.core.helm_repository:
-       name: cert-manager
-       repo_url: https://charts.jetstack.io
-
-    - name: Cert-manager jetstack
-      kubernetes.core.helm:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        name: cert-manager
-        chart_ref: cert-manager/cert-manager
-        release_namespace: cert-manager
-        create_namespace: true
-        values:
-          installCRDs: true
-
-    - name: Create name space Rancher
-      kubernetes.core.k8s:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        name: cattle-system
-        kind: Namespace
-        state: present
-
-    - name: Create a directory if it does not exist
-      ansible.builtin.file:
-        path: /kubernetes_config/rancher/
-        state: directory
-
-    - name: Create a directory if it does not exist
-      ansible.builtin.file:
-        path: /kubernetes_config/rancher/
-        state: directory
-
-    - name: Create load balancer
-      template:
-        src: templates/rancher-loadbalancer.yml.j2
-        dest: /kubernetes_config/rancher/rancher-loadbalancer.yml
-
-    - name: Apply load balancer
-      kubernetes.core.k8s:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        state: present
-        src: /kubernetes_config/rancher/rancher-loadbalancer.yml
-
-    - name: Install Rancher
-      kubernetes.core.helm:
-        kubeconfig: "/home/svetlinsem/.kube/config"
-        name: rancher
-        chart_ref: rancher-latest/rancher
-        release_namespace: cattle-system
-        values:
-         hostname: rancher.svetlinsem.com
-         bootstrapPassword: admin
