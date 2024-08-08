@@ -43,3 +43,6 @@ terraform/vm/.terraform/providers/registry.terraform.io/telmate/proxmox/3.0.1-rc
 das
 terraform/lxc/variables.auto.tfvars
 
+end
+k8s_deploy/te.yaml
+k8s_deploy/config/.kube

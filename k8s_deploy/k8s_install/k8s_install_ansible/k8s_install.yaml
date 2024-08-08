@@ -1,12 +1,28 @@
 - hosts: all
-  become: yes
+  become: true
   tasks:
 
-    - name: Update APT packages
-      apt:
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
         update_cache: yes
+        name: "*"
+        state: latest
+        autoremove: yes
+        autoclean: yes
+    
 
-    - name: Reboot and wait for reboot to complete
+    - name: Update /etc/hosts
+      become: true
+      blockinfile:
+           path: /etc/cloud/templates/hosts.debian.tmpl
+           create: yes
+           block: |
+             192.168.1.70  k8smaster
+             192.168.1.71  k8sworker01
+             192.168.1.72  k8sworker02
+             192.168.1.73  k8sworker03
+
+    - name: Reboot
       reboot:
 
     - name: Disable SWAP (Kubeadm requirement)
@@ -54,6 +70,11 @@
       apt:
         name: apt-transport-https
         state: present
+
+    - name: Install gpg
+      ansible.builtin.apt:
+         name: gpg
+         state: present
 
     - name: Add Docker apt-key
       get_url:
@@ -141,9 +162,6 @@
     - name: Reboot and wait for reboot to complete
       reboot:
 
-- hosts: k8s_master
-  become: true
-  tasks:
     - name: Install Kubectl
       apt:
         name: kubectl=1.28.*
@@ -151,12 +169,27 @@
         force: yes # allow downgrades
 
 - hosts: k8s_master
-  become: yes
+  become: true
   tasks:
 
-    - name: Initialize Kubernetes master
-      shell: kubeadm init --pod-network-cidr=10.244.0.0/16
-      register: kubeadm_init
+    - name: Install pip
+      ansible.builtin.apt:
+        name: pip
+        state: present
+
+    - name: Install dependency
+      ansible.builtin.pip:
+        name: kubernetes
+        extra_args: "--break-system-packages"
+
+    - name: Create kubeadmin-config.yaml
+      template:
+        src: templates/kubeadmin-config.yaml.j2
+        dest: kubeadmin-config.yaml
+
+    - name: Initialize the cluster
+      become: true
+      ansible.builtin.shell: kubeadm init --config=kubeadmin-config.yaml
 
     - name: create .kube directory
       become: yes
@@ -173,13 +206,24 @@
         remote_src: yes
         owner: svetlinsem
 
-    - name: install Pod network
+    - name: create flannel directory
       become: yes
       become_user: svetlinsem
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml >> pod_network_setup.log
-      args:
-        chdir: $HOME
-        creates: pod_network_setup.log
+      file:
+        path: /home/svetlinsem/flannel
+        state: directory
+        mode: 0755
+
+    - name: Create directory for Flannel
+      template:
+        src: templates/flannel.yml.j2
+        dest: /home/svetlinsem/flannel/flannel.yml
+
+    - name: Apply Flannel
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: /home/svetlinsem/flannel/flannel.yml
 
     - name: Get join command
       shell: kubeadm token create --print-join-command
@@ -206,20 +250,10 @@
   become: yes
   tasks:
 
-    - name: Install gpg
-      ansible.builtin.apt:
-         name: gpg
-         state: present
-
     - name: Import Helm GPG signing key
       ansible.builtin.shell: |
         curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
       changed_when: false
-
-    - name: Install apt-transport-https
-      ansible.builtin.apt:
-        name: apt-transport-https
-        state: present
 
     - name: Ensure /etc/apt/sources.list.d/ directory exists
       ansible.builtin.file:
@@ -244,13 +278,3 @@
       ansible.builtin.package:
         name: helm
         state: present
-
-    - name: Install pip
-      ansible.builtin.apt:
-        name: pip
-        state: present
-
-    - name: Install dependency
-      ansible.builtin.pip:
-        name: kubernetes
-        extra_args: "--break-system-packages"
