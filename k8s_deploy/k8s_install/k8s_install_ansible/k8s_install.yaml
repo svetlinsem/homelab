@@ -90,8 +90,8 @@
         update_cache: yes
 
     - name: Install Containerd
-      apt:
-        name: containerd.io
+      ansible.builtin.apt:
+        name: containerd
         state: present
 
     - name: Create Containerd directory
@@ -131,11 +131,9 @@
         name: kubelet
         enabled: yes
 
-    - name: Enable br_netfilter
+    - name: load br_netfilter kernel module
       modprobe:
-        name:
-         - br_netfilter
-         - overlay
+        name: br_netfilter
         state: present
 
     - name: Set bridge-nf-call-iptables
