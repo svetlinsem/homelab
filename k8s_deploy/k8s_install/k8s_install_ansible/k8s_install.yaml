@@ -10,6 +10,16 @@
         autoremove: yes
         autoclean: yes
     
+    - name: Install all dependencies
+      ansible.builtin.apt:
+        name:
+         - apt-transport-https
+         - gpg
+         - pip
+         - curl
+         - ca-certificates
+        state: present
+        update_cache: true
 
     - name: Update /etc/hosts
       become: true
@@ -65,29 +75,6 @@
 
     - name: Apply sysctl params without reboot
       command: sysctl --system
-
-    - name: Install APT Transport HTTPS
-      apt:
-        name: apt-transport-https
-        state: present
-
-    - name: Install gpg
-      ansible.builtin.apt:
-         name: gpg
-         state: present
-
-    - name: Add Docker apt-key
-      get_url:
-        url: https://download.docker.com/linux/debian/gpg
-        dest: /etc/apt/keyrings/docker-apt-keyring.asc
-        mode: '0644'
-        force: true
-
-    - name: Add Docker's APT repository
-      apt_repository:
-        repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }} signed-by=/etc/apt/keyrings/docker-apt-keyring.asc] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
-        state: present
-        update_cache: yes
 
     - name: Add Kubernetes apt-key
       get_url:
@@ -146,7 +133,9 @@
 
     - name: Enable br_netfilter
       modprobe:
-        name: br_netfilter
+        name:
+         - br_netfilter
+         - overlay
         state: present
 
     - name: Set bridge-nf-call-iptables
@@ -171,11 +160,6 @@
 - hosts: k8s_master
   become: true
   tasks:
-
-    - name: Install pip
-      ansible.builtin.apt:
-        name: pip
-        state: present
 
     - name: Install dependency
       ansible.builtin.pip:
@@ -278,3 +262,34 @@
       ansible.builtin.package:
         name: helm
         state: present
+
+    - name: Download metallb manifest
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+        dest: ~/metallb-native.yaml
+
+    - name: Apply metallb manifest
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: ~/metallb-native.yaml
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /metallb-config/
+        state: directory
+
+    - name: Create directory for metallb
+      template:
+        src: templates/metallb-config.yaml.j2
+        dest: /metallb-config/metallb-config.yaml
+
+    - name: Pause for 1 minutes to install Metallb
+      ansible.builtin.pause:
+        minutes: 1
+
+    - name: Apply metallb-config/ipaddres-pool
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: /metallb-config/metallb-config.yaml
