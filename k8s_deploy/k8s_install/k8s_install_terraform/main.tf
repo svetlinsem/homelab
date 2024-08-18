@@ -18,7 +18,7 @@ resource "proxmox_vm_qemu" "k8smaster" {
     scsi  {
       scsi0  {
         disk {
-          size            = 10
+          size            = 15
           cache           = "writeback"
           storage         = "apps"
         }
@@ -57,7 +57,7 @@ resource "proxmox_vm_qemu" "k8sworker" {
     scsi  {
       scsi0  {
         disk {
-          size            = 15
+          size            = 25
           cache           = "writeback"
           storage         = "apps"
         }
