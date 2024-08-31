@@ -46,3 +46,8 @@ terraform/lxc/variables.auto.tfvars
 end
 k8s_deploy/te.yaml
 k8s_deploy/config/.kube
+booking-calendar/cloudflare.ini
+booking-calendar/coomands
+booking-calendar/docker-compose.yaml
+booking-calendar/nginx.conf
+booking-calendar/ngnin1.conf
