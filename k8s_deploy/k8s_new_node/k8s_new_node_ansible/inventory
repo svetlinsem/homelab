@@ -4,5 +4,5 @@ ansible_user=svetlinsem
 k8s_master ansible_host=192.168.1.70
 
 [k8s_worker]
-k8s_worker2 ansible_host=192.168.1.72
-k8s_worker3 ansible_host=192.168.1.72
+k8s_worker2 ansible_host=192.168.1.74
+k8s_worker3 ansible_host=192.168.1.75

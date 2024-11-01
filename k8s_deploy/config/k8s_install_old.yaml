@@ -1,0 +1,350 @@
+- hosts: all
+  become: true
+  tasks:
+
+    - name: Update all packages to their latest version
+      ansible.builtin.apt:
+        update_cache: yes
+        name: "*"
+        state: latest
+        autoremove: yes
+        autoclean: yes
+    
+    - name: Install all dependencies
+      ansible.builtin.apt:
+        name:
+         - apt-transport-https
+         - gpg
+         - pip
+         - curl
+         - ca-certificates
+         - open-iscsi
+         - nfs-common
+        state: present
+        update_cache: true
+
+    - name: Update /etc/hosts
+      become: true
+      blockinfile:
+           path: /etc/cloud/templates/hosts.debian.tmpl
+           create: yes
+           block: |
+             192.168.1.70  k8smaster
+             192.168.1.71  k8sworker01
+             192.168.1.72  k8sworker02
+             192.168.1.73  k8sworker03
+
+    - name: Reboot
+      reboot:
+
+    - name: Disable SWAP (Kubeadm requirement)
+      shell: |
+        swapoff -a
+
+    - name: Disable SWAP in fstab (Kubeadm requirement)
+      replace:
+        path: /etc/fstab
+        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+        replace: '# \1'
+
+    - name: Create an empty file for the Containerd module
+      copy:
+        content: ""
+        dest: /etc/modules-load.d/containerd.conf
+        force: no
+
+    - name: Configure modules for Containerd
+      blockinfile:
+        path: /etc/modules-load.d/containerd.conf
+        block: |
+             overlay
+             br_netfilter
+
+    -
+
+    - name: Create an empty file for Kubernetes sysctl params
+      copy:
+        content: ""
+        dest: /etc/sysctl.d/k8s.conf
+        force: no
+
+    - name: Configure sysctl params for Kubernetes
+      lineinfile:
+        path: /etc/sysctl.d/k8s.conf
+        line: "{{ item }}"
+      with_items:
+        - 'net.ipv4.ip_forward = 1'
+
+    - name: Apply sysctl params without reboot
+      command: sysctl --system
+
+    - name: Enable the Containerd service and start it
+      systemd:
+        name: docker.io
+        state: restarted
+        enabled: yes
+        daemon-reload: yes
+
+    - name: Add Kubernetes apt-key
+      get_url:
+        url: https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key
+        dest: /etc/apt/keyrings/kubernetes-apt-keyring.asc
+        mode: '0644'
+        force: true
+
+    - name: Add Kubernetes' APT repository
+      apt_repository:
+        repo: "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /"
+        state: present
+        update_cache: yes
+
+    - name: Install Containerd
+      ansible.builtin.apt:
+        name: containerd
+        state: present
+
+    - name: Create Containerd directory
+      file:
+        path: /etc/containerd
+        state: directory
+
+    - name: Add Containerd configuration
+      shell: /usr/bin/containerd config default > /etc/containerd/config.toml
+
+    - name: Configuring the systemd cgroup driver for Containerd
+      lineinfile:
+        path: /etc/containerd/config.toml
+        regexp: '            SystemdCgroup = false'
+        line: '            SystemdCgroup = true'
+
+    - name: Enable the Containerd service and start it
+      systemd:
+        name: containerd
+        state: restarted
+        enabled: yes
+        daemon-reload: yes
+
+    - name: Install Kubelet
+      apt:
+        name: kubelet=1.30.*
+        state: present
+        update_cache: true
+
+    - name: Install Kubeadm
+      apt:
+        name: kubeadm=1.30.*
+        state: present
+
+    - name: Enable the Kubelet service, and enable it persistently
+      service:
+        name: kubelet
+        enabled: yes
+
+    - name: load br_netfilter kernel module
+      modprobe:
+        name: br_netfilter
+        state: present
+
+    - name: Set bridge-nf-call-iptables
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+
+    - name: Set ip_forward
+      sysctl:
+        name: net.ipv4.ip_forward
+        value: 1
+
+    - name: Reboot and wait for reboot to complete
+      reboot:
+
+    - name: Install Kubectl
+      apt:
+        name: kubectl=1.30.*
+        state: present
+        force: yes # allow downgrades
+
+- hosts: k8s_master
+  become: true
+  tasks:
+
+    - name: Install dependency for Ansbile to work with k8s
+      ansible.builtin.pip:
+        name: kubernetes
+        extra_args: "--break-system-packages"
+
+    - name: Initialize the cluster
+      become: true
+      ansible.builtin.command: kubeadm init --control-plane-endpoint=192.168.1.70 --pod-network-cidr=10.244.0.0/16 --upload-certs
+
+    - name: create .kube directory
+      become: yes
+      become_user: svetlinsem
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: copy admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/svetlinsem/.kube/config
+        remote_src: yes
+        owner: svetlinsem
+
+    - name: Download Flannel
+      ansible.builtin.get_url:
+        url: https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+        dest: ~/kube-flannel.yml
+
+    - name: Apply Flannel
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: ~/kube-flannel.yml
+
+    - name: Get join command
+      shell: kubeadm token create --print-join-command
+      register: join_command_raw
+
+    - name: Set join command
+      set_fact:
+        join_command: "{{ join_command_raw.stdout_lines[0] }}"
+
+- hosts: k8s_worker
+  become: true
+  tasks:
+
+    - name: TCP port 6443 on master is reachable from worker
+      wait_for: "host={{ hostvars['k8s_master']['ansible_default_ipv4']['address'] }} port=6443 timeout=1"
+
+    - name: Join cluster
+      shell: "{{ hostvars['k8s_master'].join_command }} >> node_joined.log"
+      args:
+        chdir: /home/svetlinsem
+        creates: node_joined.log
+
+- hosts: k8s_master
+  become: yes
+  tasks:
+
+    - name: Import Helm GPG signing key
+      ansible.builtin.shell: |
+        curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+      changed_when: false
+
+    - name: Ensure /etc/apt/sources.list.d/ directory exists
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/
+        state: directory
+
+    - name: Ensure helm-stable-debian.list exists
+      ansible.builtin.file:
+        path: /etc/apt/sources.list.d/helm-stable-debian.list
+        state: touch
+
+    - name: Add Helm repository to apt sources
+      ansible.builtin.lineinfile:
+        path: /etc/apt/sources.list.d/helm-stable-debian.list
+        line: "deb [arch=amd64 signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main"
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+
+    - name: Install Helm
+      ansible.builtin.package:
+        name: helm
+        state: present
+
+    - name: Download metallb manifest
+      ansible.builtin.get_url:
+        url: https://raw.githubusercontent.com/metallb/metallb/v0.14.8/config/manifests/metallb-native.yaml
+        dest: ~/metallb-native.yaml
+
+    - name: Apply metallb manifest
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: ~/metallb-native.yaml
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /metallb-config/
+        state: directory
+
+    - name: Create directory for metallb
+      template:
+        src: templates/metallb-config.yaml.j2
+        dest: /metallb-config/metallb-config.yaml
+
+    - name: Pause for 1 minutes to install Metallb
+      ansible.builtin.pause:
+        minutes: 1
+
+    - name: Apply metallb-config/ipaddres-pool
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: /metallb-config/metallb-config.yaml
+
+    - name: Install Ingress-nginx
+      kubernetes.core.helm:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        name: ingress-nginx
+        chart_ref: oci://ghcr.io/nginxinc/charts/nginx-ingress --version 1.3.1
+        release_namespace: ingress-nginx
+        create_namespace: true
+
+    - name: Add a repository jetstack
+      kubernetes.core.helm_repository:
+       name: cert-manager
+       repo_url: https://charts.jetstack.io
+
+    - name: Cert-manager jetstack
+      kubernetes.core.helm:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        name: cert-manager
+        chart_ref: cert-manager/cert-manager
+        release_namespace: cert-manager
+        create_namespace: true
+        values:
+          installCRDs: true
+
+    - name: Create name space Rancher
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        name: cattle-system
+        kind: Namespace
+        state: present
+
+    - name: Create a directory if it does not exist
+      ansible.builtin.file:
+        path: /kubernetes_config/rancher/
+        state: directory
+
+    - name: Create load balancer
+      template:
+        src: templates/rancher-loadbalancer.yml.j2
+        dest: /kubernetes_config/rancher/rancher-loadbalancer.yml
+
+    - name: Apply load balancer
+      kubernetes.core.k8s:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        state: present
+        src: /kubernetes_config/rancher/rancher-loadbalancer.yml
+
+    - name: Add a repository rancher-latest
+      kubernetes.core.helm_repository:
+       name: rancher-latest
+       repo_url: https://releases.rancher.com/server-charts/latest
+
+    - name: Install Rancher
+      kubernetes.core.helm:
+        kubeconfig: "/home/svetlinsem/.kube/config"
+        name: rancher
+        chart_ref: rancher-latest/rancher
+        release_namespace: cattle-system
+        values:
+          hostname: rancher.svetlinsem.com
+          bootstrapPassword: admin

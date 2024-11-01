@@ -1,7 +1,7 @@
 resource "proxmox_vm_qemu" "k8smastertest" {
   target_node       = var.target_node
-  name              = "Coolify"
-  vmid              = 610
+  name              = "dockertraining"
+  vmid              = 900
   count             = 1 
   clone             = "debian12"
   os_type           = "cloud-init"
@@ -33,6 +33,6 @@ resource "proxmox_vm_qemu" "k8smastertest" {
   # Cloud Init Settings
   # Reference: https://pve.proxmox.com/wiki/Cloud-Init_Support
   cloudinit_cdrom_storage = var.storage_backend
-  ipconfig0 = "ip=192.168.1.61/24,gw=192.168.1.1"
+  ipconfig0 = "ip=192.168.1.90/24,gw=192.168.1.1"
   nameserver = var.nameservers
 } 

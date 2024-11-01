@@ -1,7 +1,7 @@
 resource "proxmox_vm_qemu" "k8sworkertest" {
   target_node       = var.target_node
   name              = "k8sworker.new.node${count.index + 1}"
-  vmid              = "620"
+  vmid              = "740"
   count             = 1
   clone             = "debian12"
   os_type           = "cloud-init"
@@ -18,7 +18,7 @@ resource "proxmox_vm_qemu" "k8sworkertest" {
     scsi  {
       scsi0  {
         disk {
-          size            = 15
+          size            = 25
           cache           = "writeback"
           storage         = "apps"
         }
@@ -33,6 +33,6 @@ resource "proxmox_vm_qemu" "k8sworkertest" {
   # Cloud Init Settings
   # Reference: https://pve.proxmox.com/wiki/Cloud-Init_Support
   cloudinit_cdrom_storage = var.storage_backend
-  ipconfig0 = "ip=192.168.1.6${count.index + 2}/24,gw=192.168.1.1"
+  ipconfig0 = "ip=192.168.1.74${count.index + 2}/24,gw=192.168.1.1"
   nameserver = var.nameservers
 } 
