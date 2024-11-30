@@ -8,22 +8,6 @@
 192.168.1.7 Truenas 
 192.168.1.8 Nextcloud
 
-192.168.1.11 Cloudflaer
-192.168.1.12 pi-hole
-
-192.168.1.20 Portainer
-192.168.1.20:5571 Dockge
-192.168.1.20:81 Nginx proxy
-
-192.168.1.40 Grafana
-192.168.1.41 Loki
-192.168.1.42 Influxdb1
-192.168.1.43 influxdb2
-192.168.1.44 Librenms
-
-192.168.1.50 Tailscale
-192.168.1.51 Wireguard
-
 192.168.1.250 vscode
 
 192.168.1.7:30024 qbitttoren
