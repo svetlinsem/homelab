@@ -51,3 +51,5 @@ booking-calendar/coomands
 booking-calendar/docker-compose.yaml
 booking-calendar/nginx.conf
 booking-calendar/ngnin1.conf
+terraform/vm/.terraform/providers/registry.terraform.io/telmate/proxmox/2.9.14/darwin_arm64/terraform-provider-proxmox_v2.9.14
+terraform/vm/.terraform/providers/registry.terraform.io/telmate/proxmox/3.0.1-rc1/darwin_arm64/terraform-provider-proxmox_v3.0.1-rc1
