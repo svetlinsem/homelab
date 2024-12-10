@@ -1,6 +1,6 @@
 resource "proxmox_vm_qemu" "k8smastertest" {
   target_node       = var.target_node
-  name              = "coolify"
+  name              = "azurearc"
   vmid              = 220
   count             = 1 
   clone             = "debian12"
@@ -8,8 +8,8 @@ resource "proxmox_vm_qemu" "k8smastertest" {
   scsihw            = "virtio-scsi-pci"
   boot              = "order=scsi0;ide2"
   cpu               = "host"
-  cores             = 4
-  memory            = 8000
+  cores             = 2
+  memory            = 2000
   vm_state          = "running"
   agent             = 1
   onboot            = true
@@ -33,6 +33,6 @@ resource "proxmox_vm_qemu" "k8smastertest" {
   # Cloud Init Settings
   # Reference: https://pve.proxmox.com/wiki/Cloud-Init_Support
   cloudinit_cdrom_storage = var.storage_backend
-  ipconfig0 = "ip=192.168.1.22/24,gw=192.168.1.1"
+  ipconfig0 = "ip=192.168.1.90/24,gw=192.168.1.1"
   nameserver = var.nameservers
 } 
