@@ -4,7 +4,7 @@ autoinstall:
   identity:
     hostname: ubuntu-zfs
     username: admin
-    password: "$6$rounds=4096$abcdefghijklmnopqrst$..."  # SHA-512 hashed
+    password: "$6$rounds=4096$abcdefghijklmnopqrst$..."
   ssh:
     install-server: true
     allow-pw: false
@@ -14,7 +14,7 @@ autoinstall:
   storage:
     layout:
       name: zfs
-      password: "yourStrongPassphrase"   # ZFS encryption passphrase
+      password: "yourStrongPassphrase"
       pool:
         name: rpool
         root: true
@@ -31,4 +31,13 @@ autoinstall:
             mountpoint: /var/lib
             compression: lz4
             atime: off
+  packages:
+    - htop
+    - curl
+    - zfsutils-linux
+    - landscape-client
+    - software-properties-common
+  mirror:
+    country: 'manual'
+    url: 'http://archive.ubuntu.com/ubuntu/'   # Global main mirror
 
