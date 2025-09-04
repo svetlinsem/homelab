@@ -1,0 +1,48 @@
+#cloud-config
+autoinstall:
+  version: 1
+  identity:
+    hostname: ubuntu-zfs
+    username: admin
+    password: "admin"
+  ssh:
+    install-server: true
+#    authorized-keys:
+#      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC...
+    allow-pw: false
+  locale: en_US.UTF-8
+  keyboard:
+    layout: us
+  storage:
+    layout:
+      name: zfs
+      match:
+        size: largest
+      pool:
+        type: zfs
+        name: rpool
+        root: true
+        encryption: true
+        encryption-key: "admin"   # <-- auto-unlock key
+        datasets:
+          - name: rpool/ROOT
+            mountpoint: /
+            compression: lz4
+            atime: off
+          - name: rpool/home
+            mountpoint: /home
+            compression: lz4
+            atime: off
+          - name: rpool/var_lib
+            mountpoint: /var/lib
+            compression: lz4
+            atime: off
+  packages:
+    - htop
+    - curl
+    - zfsutils-linux
+    - landscape-client
+  late-commands:
+    # Update system
+    - curtin in-target --target=/target -- update
+    - curtin in-target --target=/target -- apt-get -y dist-upgrade
