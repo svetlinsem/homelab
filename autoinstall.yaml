@@ -4,11 +4,12 @@ autoinstall:
   identity:
     hostname: ubuntu-zfs
     username: admin
-    password: "admin"
+    # The password line is removed since we are using SSH keys
   ssh:
     install-server: true
-#    authorized-keys:
-#      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC...
+    # Replace the placeholder with your actual SSH public key
+    authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC...
     allow-pw: false
   locale: en_US.UTF-8
   keyboard:
@@ -42,7 +43,4 @@ autoinstall:
     - curl
     - zfsutils-linux
     - landscape-client
-  late-commands:
-    # Update system
-    - curtin in-target --target=/target -- update
-    - curtin in-target --target=/target -- apt-get -y dist-upgrade
+
