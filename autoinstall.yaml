@@ -4,12 +4,9 @@ autoinstall:
   identity:
     hostname: ubuntu-zfs
     username: admin
-    # The password line is removed since we are using SSH keys
+    password: "$6$rounds=4096$abcdefghijklmnopqrst$..."  # SHA-512 hashed
   ssh:
     install-server: true
-    # Replace the placeholder with your actual SSH public key
-    authorized-keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC...
     allow-pw: false
   locale: en_US.UTF-8
   keyboard:
@@ -17,14 +14,10 @@ autoinstall:
   storage:
     layout:
       name: zfs
-      match:
-        size: largest
+      password: "yourStrongPassphrase"   # ZFS encryption passphrase
       pool:
-        type: zfs
         name: rpool
         root: true
-        encryption: true
-        encryption-key: "admin"   # <-- auto-unlock key
         datasets:
           - name: rpool/ROOT
             mountpoint: /
@@ -38,9 +31,4 @@ autoinstall:
             mountpoint: /var/lib
             compression: lz4
             atime: off
-  packages:
-    - htop
-    - curl
-    - zfsutils-linux
-    - landscape-client
 
