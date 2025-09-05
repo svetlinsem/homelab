@@ -11,6 +11,13 @@ autoinstall:
   locale: en_US.UTF-8
   keyboard:
     layout: us
+  apt:
+    primary:
+      - arches: [default]
+        uri: http://archive.ubuntu.com/ubuntu
+    security:
+      - arches: [default]
+        uri: http://security.ubuntu.com/ubuntu
   storage:
     layout:
       name: zfs
@@ -37,7 +44,4 @@ autoinstall:
     - zfsutils-linux
     - landscape-client
     - software-properties-common
-  mirror:
-    country: 'manual'
-    url: 'http://archive.ubuntu.com/ubuntu/'   # Global main mirror
 
